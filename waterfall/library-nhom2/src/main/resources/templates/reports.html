@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Báo cáo - Library</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+</head>
+<body>
+<div class="container-flex">
+    <aside class="sidebar">
+        <div class="logo">📚 LMS</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/}" href="/" class="nav-item"><span>📊</span> Dashboard</a>
+            <a th:href="@{/books-manage}" href="/books-manage" class="nav-item"><span>📖</span> Quản lý Sách</a>
+            <a th:href="@{/members-manage}" href="/members-manage" class="nav-item"><span>👥</span> Quản lý Độc giả</a>
+            <a th:href="@{/loans-manage}" href="/loans-manage" class="nav-item"><span>🔄</span> Mượn/Trả</a>
+            <a th:href="@{/search}" href="/search" class="nav-item"><span>🔍</span> Tìm kiếm</a>
+            <a href="#" class="nav-item active"><span>📈</span> Báo cáo</a>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Báo cáo Thống kê</h2>
+            <button class="btn" id="btn-export">📥 Xuất Excel</button>
+        </header>
+
+        <!-- Key Stats -->
+        <section class="stats-grid" style="margin: 20px 40px 0 40px;">
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-content">
+                    <h3 id="total-books">450</h3>
+                    <p>Tổng Sách</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <h3 id="total-members">1223</h3>
+                    <p>Tổng Độc giả</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📤</div>
+                <div class="stat-content">
+                    <h3 id="total-loans">3450</h3>
+                    <p>Tổng Lượt Mượn</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-content">
+                    <h3 id="overdue-count">22</h3>
+                    <p>Sách Quá Hạn</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="table-section" style="margin: 20px 40px;">
+            <h3>Báo cáo Chi tiết</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Loại Báo cáo</label>
+                    <select id="report-type">
+                        <option value="">-- Chọn --</option>
+                        <option value="books">Danh sách Sách</option>
+                        <option value="members">Danh sách Độc giả</option>
+                        <option value="loans">Lịch sử Mượn/Trả</option>
+                        <option value="overdue">Sách Quá Hạn</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Từ Ngày</label>
+                    <input type="date" id="report-from-date" />
+                </div>
+                <div class="form-group">
+                    <label>Đến Ngày</label>
+                    <input type="date" id="report-to-date" />
+                </div>
+            </div>
+            <button class="btn" id="btn-generate-report">Tạo Báo cáo</button>
+
+            <div id="report-content" style="margin-top: 20px;"></div>
+        </section>
+
+        <!-- Popular Books -->
+        <section class="table-section" style="margin: 20px 40px; margin-top: 40px;">
+            <h3>Sách Được Mượn Nhiều Nhất</h3>
+            <table id="popular-books-table">
+                <thead>
+                    <tr>
+                        <th>Xếp hạng</th>
+                        <th>Tên Sách</th>
+                        <th>Tác giả</th>
+                        <th>Số Lần Mượn</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </div>
+</div>
+
+<script th:src="@{/js/mock-api.js}" src="/js/mock-api.js"></script>
+<script>
+    document.getElementById('btn-generate-report').addEventListener('click', function(){
+        const type = document.getElementById('report-type').value;
+        const from = document.getElementById('report-from-date').value;
+        const to = document.getElementById('report-to-date').value;
+        alert('TODO: Generate report type=' + type + ', from=' + from + ', to=' + to);
+    });
+
+    document.getElementById('btn-export').addEventListener('click', function(){
+        alert('TODO: Export report to Excel');
+    });
+
+    // Load initial stats
+    loadReportStats();
+    loadPopularBooks();
+</script>
+</body>
+</html>
