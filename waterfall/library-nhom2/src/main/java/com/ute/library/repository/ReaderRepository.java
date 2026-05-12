@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface ReaderRepository extends JpaRepository<Reader, Integer> {
     Optional<Reader> findByReaderCode(String code);
+    Optional<Reader> findByEmail(String email);
+    Optional<Reader> findByPhone(String phone);
 }

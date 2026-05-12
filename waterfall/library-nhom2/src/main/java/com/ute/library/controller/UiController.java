@@ -25,15 +25,7 @@ public class UiController {
         return "index";
     }
 
-    @GetMapping("/books-manage")
-    public String booksManage() {
-        return "books-manage";
-    }
 
-    @GetMapping("/members-manage")
-    public String membersManage() {
-        return "members-manage";
-    }
 
     @GetMapping("/loans-manage")
     public String loansManage() {

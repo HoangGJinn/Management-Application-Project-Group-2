@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface BorrowSlipRepository extends JpaRepository<BorrowSlip, Integer> {
     Optional<BorrowSlip> findBySlipCode(String code);
+    boolean existsByReader_Id(Integer readerId);
 }

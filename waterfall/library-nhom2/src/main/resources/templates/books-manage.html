@@ -10,8 +10,8 @@
     <aside class="sidebar">
         <div class="logo">📚 LMS</div>
         <nav class="sidebar-nav">
-            <a th:href="@{/}" href="/" class="nav-item"><span>📊</span> Dashboard</a>
-            <a href="#" class="nav-item active"><span>📖</span> Quản lý Sách</a>
+            <a th:href="@{/index}" href="/index" class="nav-item"><span>📊</span> Dashboard</a>
+            <a th:href="@{/books-manage}" href="/books-manage" class="nav-item active"><span>📖</span> Quản lý Sách</a>
             <a th:href="@{/members-manage}" href="/members-manage" class="nav-item"><span>👥</span> Quản lý Độc giả</a>
             <a th:href="@{/loans-manage}" href="/loans-manage" class="nav-item"><span>🔄</span> Mượn/Trả</a>
             <a th:href="@{/search}" href="/search" class="nav-item"><span>🔍</span> Tìm kiếm</a>
@@ -21,105 +21,133 @@
 
     <div class="main-content">
         <header class="top-header">
-            <h2>Quản lý Sách</h2>
-            <button class="btn" id="btn-add-book">+ Thêm Sách Mới</button>
+            <div>
+                <h2>Quản lý Sách</h2>
+                <p>Thêm mới, chỉnh sửa, xóa và xem toàn bộ danh sách sách bằng Thymeleaf.</p>
+            </div>
         </header>
 
+        <section th:if="${successMessage != null}" style="margin: 0 40px 20px; padding: 12px 16px; background: #e7f8ed; color: #166534; border-radius: 8px;">
+            <span th:text="${successMessage}">Thông báo thành công</span>
+        </section>
+        <section th:if="${errorMessage != null}" style="margin: 0 40px 20px; padding: 12px 16px; background: #fde8e8; color: #b91c1c; border-radius: 8px;">
+            <span th:text="${errorMessage}">Thông báo lỗi</span>
+        </section>
+
         <section class="table-section" style="margin: 20px 40px;">
-            <table id="books-manage-table">
+            <h3 th:text="${bookForm.id == null ? 'Thêm sách mới' : 'Cập nhật thông tin sách'}">Thêm sách mới</h3>
+            <form th:action="@{/books}" th:object="${bookForm}" method="post" style="display: grid; gap: 16px; margin-top: 16px;">
+                <input type="hidden" th:field="*{id}" />
+
+                <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+                    <div class="form-group">
+                        <label>Mã sách *</label>
+                        <input type="text" th:field="*{bookCode}" placeholder="VD: BK-001" />
+                        <small style="color:#b91c1c;" th:errors="*{bookCode}"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Tên sách *</label>
+                        <input type="text" th:field="*{title}" placeholder="Nhập tên sách" />
+                        <small style="color:#b91c1c;" th:errors="*{title}"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Tác giả *</label>
+                        <input type="text" th:field="*{author}" placeholder="Nhập tên tác giả" />
+                        <small style="color:#b91c1c;" th:errors="*{author}"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Thể loại *</label>
+                        <select th:field="*{categoryId}">
+                            <option value="">-- Chọn thể loại --</option>
+                            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.categoryName}"></option>
+                        </select>
+                        <small style="color:#b91c1c;" th:errors="*{categoryId}"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Nhà xuất bản *</label>
+                        <select th:field="*{publisherId}">
+                            <option value="">-- Chọn nhà xuất bản --</option>
+                            <option th:each="publisher : ${publishers}" th:value="${publisher.id}" th:text="${publisher.publisherName}"></option>
+                        </select>
+                        <small style="color:#b91c1c;" th:errors="*{publisherId}"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Năm xuất bản</label>
+                        <input type="number" th:field="*{publishYear}" min="0" placeholder="VD: 2026" />
+                    </div>
+                    <div class="form-group">
+                        <label>Số lượng *</label>
+                        <input type="number" th:field="*{quantity}" min="0" />
+                        <small style="color:#b91c1c;" th:errors="*{quantity}"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Số lượng còn lại *</label>
+                        <input type="number" th:field="*{availableQuantity}" min="0" />
+                        <small style="color:#b91c1c;" th:errors="*{availableQuantity}"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Trạng thái *</label>
+                        <select th:field="*{status}">
+                            <option value="">-- Chọn trạng thái --</option>
+                            <option value="AVAILABLE">AVAILABLE</option>
+                            <option value="BORROWED">BORROWED</option>
+                            <option value="UNAVAILABLE">UNAVAILABLE</option>
+                        </select>
+                        <small style="color:#b91c1c;" th:errors="*{status}"></small>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button type="submit" class="btn" th:text="${bookForm.id == null ? 'Thêm Sách' : 'Cập Nhật'}">Thêm Sách</button>
+                    <a th:href="@{/books-manage}" href="/books-manage" class="btn" style="background: #888; text-decoration: none;">Làm mới</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="table-section" style="margin: 20px 40px;">
+            <h3>Danh sách sách</h3>
+            <table id="books-manage-table" style="margin-top: 16px; width: 100%;">
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên Sách</th>
-                        <th>Tác giả</th>
-                        <th>Thể loại</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
+                <tr>
+                    <th>Mã sách</th>
+                    <th>Tên sách</th>
+                    <th>Tác giả</th>
+                    <th>Thể loại</th>
+                    <th>Nhà xuất bản</th>
+                    <th>Năm XB</th>
+                    <th>Số lượng</th>
+                    <th>Còn lại</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(books)}">
+                    <td colspan="10" style="text-align:center; color:#888;">Chưa có sách nào trong hệ thống</td>
+                </tr>
+                <tr th:each="book : ${books}">
+                    <td th:text="${book.bookCode}">BK-001</td>
+                    <td th:text="${book.title}">Tên sách</td>
+                    <td th:text="${book.author}">Tác giả</td>
+                    <td th:text="${book.category != null ? book.category.categoryName : '-'}">Thể loại</td>
+                    <td th:text="${book.publisher != null ? book.publisher.publisherName : '-'}">NXB</td>
+                    <td th:text="${book.publishYear != null ? book.publishYear : '-'}">2026</td>
+                    <td th:text="${book.quantity != null ? book.quantity : 0}">0</td>
+                    <td th:text="${book.availableQuantity != null ? book.availableQuantity : 0}">0</td>
+                    <td>
+                        <span th:text="${book.status}" style="padding:4px 8px; border-radius:4px; background:#eef2ff;">AVAILABLE</span>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <a th:href="@{/books-manage(editId=${book.id})}" href="/books-manage?editId=1" class="btn-small" style="text-decoration:none;">Sửa</a>
+                        <form th:action="@{/books/{id}/delete(id=${book.id})}" method="post" style="display:inline;" onsubmit="return confirm('Xác nhận xóa sách này?');">
+                            <button type="submit" class="btn-small btn-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
             </table>
         </section>
     </div>
 </div>
-
-<!-- Modal Thêm/Sửa Sách -->
-<div id="modal-book" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 id="modal-title">Thêm Sách</h3>
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-        </div>
-        <form id="form-book">
-            <div class="form-group">
-                <label>Tên Sách *</label>
-                <input type="text" id="book-title" required />
-            </div>
-            <div class="form-group">
-                <label>Tác giả *</label>
-                <input type="text" id="book-author" required />
-            </div>
-            <div class="form-group">
-                <label>Thể loại *</label>
-                <input type="text" id="book-category" required />
-            </div>
-            <div class="form-group">
-                <label>ISBN</label>
-                <input type="text" id="book-isbn" />
-            </div>
-            <div class="form-group">
-                <label>Năm Xuất bản</label>
-                <input type="number" id="book-year" />
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn">Lưu</button>
-                <button type="button" class="btn" onclick="closeModal()" style="background: #888;">Hủy</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script th:src="@{/js/mock-api.js}" src="/js/mock-api.js"></script>
-<script>
-    document.getElementById('btn-add-book').addEventListener('click', function(){ openModal('add'); });
-    document.getElementById('form-book').addEventListener('submit', function(e){
-        e.preventDefault();
-        const book = {
-            title: document.getElementById('book-title').value,
-            author: document.getElementById('book-author').value,
-            category: document.getElementById('book-category').value,
-            isbn: document.getElementById('book-isbn').value,
-            year: document.getElementById('book-year').value
-        };
-        saveBook(book);
-    });
-
-    function openModal(mode) {
-        document.getElementById('modal-title').textContent = mode === 'add' ? 'Thêm Sách' : 'Sửa Sách';
-        document.getElementById('form-book').reset();
-        document.getElementById('modal-book').classList.add('show');
-    }
-
-    function closeModal() {
-        document.getElementById('modal-book').classList.remove('show');
-    }
-
-    function saveBook(book) {
-        alert('TODO: Implement saveBook. Data: ' + JSON.stringify(book));
-        closeModal();
-    }
-
-    function editBook(id) {
-        alert('TODO: Edit book ' + id);
-        openModal('edit');
-    }
-
-    function deleteBook(id) {
-        if(confirm('Xác nhận xóa?')) alert('TODO: Delete book ' + id);
-    }
-
-    // Load initial data
-    loadBooksManage();
-</script>
 </body>
 </html>
