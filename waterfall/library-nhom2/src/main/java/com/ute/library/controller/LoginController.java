@@ -29,11 +29,18 @@ public class LoginController {
     @PostMapping("/api/login")
     @ResponseBody
     public Map<String, Object> login(
-            @RequestParam String username,
-            @RequestParam String password,
+            @RequestBody Map<String, String> payload,
             HttpSession session) {
         
         Map<String, Object> response = new HashMap<>();
+        String username = payload.get("username");
+        String password = payload.get("password");
+        
+        if (username == null || password == null) {
+            response.put("success", false);
+            response.put("message", "Username and password are required");
+            return response;
+        }
         
         Optional<Librarian> librarianOpt = librarianRepository.findByUsername(username);
         

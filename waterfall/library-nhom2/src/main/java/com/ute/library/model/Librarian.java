@@ -27,15 +27,6 @@ public class Librarian {
     @Column(name = "password_hash")
     private String passwordHash;
 
-    @Column(unique = true)
-    private String email;
-
-    @Column(unique = true)
-    private String phone;
-
-    @Column(nullable = false)
-    private String status;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

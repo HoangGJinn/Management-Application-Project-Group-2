@@ -15,7 +15,12 @@ import java.util.Arrays;
 @Controller
 public class UiController {
 
-    @GetMapping({"/","/index"})
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/login";
+    }
+
+    @GetMapping("/index")
     public String index() {
         return "index";
     }
