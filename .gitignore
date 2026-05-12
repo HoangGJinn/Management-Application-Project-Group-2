@@ -1,0 +1,44 @@
+### Tệp tin biên dịch Java & Log ###
+*.class
+*.log
+*.ctxt
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Log và tệp tạm thời ###
+/logs/
+*.log
+/tmp/
+hs_err_pid*
+replay_pid*
+
+### Cấu hình môi trường (Quan trọng cho bảo mật) ###
+.env
+.env.local
+.env.*.local
+*.properties.xml
+config/local.properties
+
+### OS Specific ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+### Công cụ xây dựng khác ###
+.gradle/
+build/
+bin/
+/out/
+**/.idea/
+target/
+
+### Tài liệu hỗ trợ (Nếu muốn bỏ qua tệp hướng dẫn mặc định) ###
+HELP.md
