@@ -1,33 +1,42 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+### Tệp tin biên dịch Java & Log ###
+*.class
+*.log
+*.ctxt
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+### Log và tệp tạm thời ###
+/logs/
+*.log
+/tmp/
+hs_err_pid*
+replay_pid*
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+### Cấu hình môi trường (Quan trọng cho bảo mật) ###
+.env
+.env.local
+.env.*.local
+*.properties.xml
+config/local.properties
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+### OS Specific ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+### Công cụ xây dựng khác ###
+.gradle/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+bin/
+/out/
 
-### VS Code ###
-.vscode/
+### Tài liệu hỗ trợ (Nếu muốn bỏ qua tệp hướng dẫn mặc định) ###
+HELP.md

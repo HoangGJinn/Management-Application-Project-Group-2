@@ -15,20 +15,17 @@ import java.util.Arrays;
 @Controller
 public class UiController {
 
-    @GetMapping({"/", "/index", "/home"})
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/login";
+    }
+
+    @GetMapping({"/index", "/home"})
     public String index() {
         return "index";
     }
 
-    @GetMapping("/books-manage")
-    public String booksManage() {
-        return "books-manage";
-    }
 
-    @GetMapping("/members-manage")
-    public String membersManage() {
-        return "members-manage";
-    }
 
     @GetMapping("/loans-manage")
     public String loansManage() {

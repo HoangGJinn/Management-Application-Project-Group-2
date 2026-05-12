@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Books - Library</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+</head>
+<body>
+<header>
+    <h1>Books</h1>
+    <nav>
+        <a th:href="@{/index}" href="/">Dashboard</a> |
+        <a th:href="@{/members}" href="/members">Members</a> |
+        <a th:href="@{/loans}" href="/loans">Loans</a>
+    </nav>
+</header>
+<main>
+    <section>
+        <button id="refresh-books">Refresh</button>
+        <button id="add-book">Add Book (placeholder)</button>
+        <table id="books-table">
+            <thead>
+                <tr><th>ID</th><th>Title</th><th>Author</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                <!-- rows populated by mock-api.js -->
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<script th:src="@{/js/mock-api.js}" src="/js/mock-api.js"></script>
+<script>
+document.getElementById('refresh-books').addEventListener('click', function(){ loadBooks(); });
+document.getElementById('add-book').addEventListener('click', function(){
+    alert('Add book placeholder - implement createBook()');
+});
+
+// initial load
+loadBooks();
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Loans - Library</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+</head>
+<body>
+<header>
+    <h1>Loans</h1>
+    <nav>
+        <a th:href="@{/index}" href="/">Dashboard</a> |
+        <a th:href="@{/books}" href="/books">Books</a> |
+        <a th:href="@{/members}" href="/members">Members</a>
+    </nav>
+</header>
+<main>
+    <section>
+        <button id="refresh-loans">Refresh</button>
+        <table id="loans-table">
+            <thead>
+                <tr><th>ID</th><th>Book</th><th>Member</th><th>Due</th></tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<script th:src="@{/js/mock-api.js}" src="/js/mock-api.js"></script>
+<script>
+document.getElementById('refresh-loans').addEventListener('click', function(){ loadLoans(); });
+loadLoans();
+</script>
+</body>
+</html>
