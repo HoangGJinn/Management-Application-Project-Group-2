@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Thống kê theo thời gian - Library</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+</head>
+<body>
+<div class="container-flex">
+    <aside class="sidebar">
+        <div class="logo">📚 LMS</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/}" href="/" class="nav-item"><span>📊</span> Dashboard</a>
+            <a th:href="@{/books-manage}" href="/books-manage" class="nav-item"><span>📖</span> Quản lý Sách</a>
+            <a th:href="@{/members-manage}" href="/members-manage" class="nav-item"><span>👥</span> Quản lý Độc giả</a>
+            <a th:href="@{/loans-manage}" href="/loans-manage" class="nav-item"><span>🔄</span> Mượn/Trả</a>
+            <a th:href="@{/search}" href="/search" class="nav-item"><span>🔍</span> Tìm kiếm</a>
+            <a th:href="@{/reports}" href="/reports" class="nav-item active"><span>📈</span> Thống kê, báo cáo</a>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Thống kê theo thời gian</h2>
+            <a th:href="@{/reports}" href="/reports" class="btn">Quay lại tổng quan</a>
+        </header>
+
+        <section class="table-section" style="margin: 20px 40px;">
+            <h3>Chọn khoảng thời gian</h3>
+            <p class="alert-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+            <form th:action="@{/reports/statistics}" method="get" class="filter-form compact-filter-form">
+                <div class="form-group">
+                    <label>Từ ngày</label>
+                    <input type="date" name="fromDate" th:value="${filter.fromDate}" />
+                </div>
+                <div class="form-group">
+                    <label>Đến ngày</label>
+                    <input type="date" name="toDate" th:value="${filter.toDate}" />
+                </div>
+                <div class="report-actions">
+                    <button type="submit" class="btn">Lọc</button>
+                    <a th:href="@{/reports/statistics}" href="/reports/statistics" class="btn btn-muted">Làm mới</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🧾</div>
+                <div class="stat-content">
+                    <h3 th:text="${statistics.createdSlipCount}">0</h3>
+                    <p>Phiếu mượn được tạo</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📤</div>
+                <div class="stat-content">
+                    <h3 th:text="${statistics.borrowedQuantity}">0</h3>
+                    <p>Sách được mượn</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📥</div>
+                <div class="stat-content">
+                    <h3 th:text="${statistics.returnedQuantity}">0</h3>
+                    <p>Sách đã trả</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-content">
+                    <h3 th:text="${statistics.overdueQuantity}">0</h3>
+                    <p>Sách quá hạn</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <h3 th:text="${statistics.completedSlipCount}">0</h3>
+                    <p>Phiếu đã hoàn tất</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔄</div>
+                <div class="stat-content">
+                    <h3 th:text="${statistics.borrowingSlipCount}">0</h3>
+                    <p>Phiếu đang mượn</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

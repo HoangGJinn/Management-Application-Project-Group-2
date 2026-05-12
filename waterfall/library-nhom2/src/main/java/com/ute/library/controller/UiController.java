@@ -20,7 +20,7 @@ public class UiController {
         return "redirect:/login";
     }
 
-    @GetMapping("/index")
+    @GetMapping({"/index", "/home"})
     public String index() {
         return "index";
     }
@@ -35,11 +35,6 @@ public class UiController {
     @GetMapping("/search")
     public String search() {
         return "search";
-    }
-
-    @GetMapping("/reports")
-    public String reports() {
-        return "reports";
     }
 
     // -- Mock API endpoints (returning static mock data) --
