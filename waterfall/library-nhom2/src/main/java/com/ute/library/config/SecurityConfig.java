@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/index", true)
                 .permitAll()
             )
-            .csrf(csrf -> csrf.disable());
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
         return http.build();
     }
 }
