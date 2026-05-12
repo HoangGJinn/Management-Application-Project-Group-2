@@ -131,7 +131,7 @@
         document.getElementById('modal-loan').classList.add('show'); 
     });
     document.getElementById('btn-return').addEventListener('click', function(){ 
-        document.getElementById('modal-return').classList.add('show'); 
+        openReturnModal();
     });
 
     function closeModal() {
@@ -147,14 +147,24 @@
         closeModal();
     });
 
-    document.getElementById('form-return').addEventListener('submit', function(e){
+    document.getElementById('form-return').addEventListener('submit', async function(e){
         e.preventDefault();
-        alert('TODO: Record book return');
+        const loanId = document.getElementById('return-loan').value;
+        const returnDate = document.getElementById('return-date').value;
+        const notes = document.getElementById('return-notes').value;
+
+        const result = await recordBookReturn(loanId, returnDate, notes);
+        if(!result.success) {
+            alert(result.message);
+            return;
+        }
+
+        alert(result.message);
         closeReturnModal();
     });
 
     function returnBook(loanId) {
-        alert('TODO: Return book ' + loanId);
+        openReturnModal(loanId);
     }
 
     // Load initial data
