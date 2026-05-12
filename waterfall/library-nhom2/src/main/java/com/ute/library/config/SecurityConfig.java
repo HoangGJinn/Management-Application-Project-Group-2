@@ -14,12 +14,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/", "/index", "/books", "/members", "/loans").permitAll()
-                .requestMatchers("/api/**").permitAll()
-                .requestMatchers("/css/**", "/js/**").permitAll()
-                .anyRequest().authenticated()
+                // Project hien chua co login/role that, nen mo toan bo route de demo khong bi Access Denied.
+                .anyRequest().permitAll()
             )
-            .csrf(csrf -> csrf.disable());
+            .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
         return http.build();
     }
 }
