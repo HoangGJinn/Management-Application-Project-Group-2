@@ -1,19 +1,35 @@
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\config\SecurityConfig.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\controller\LoginController.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\controller\UiController.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\LibraryNhom2Application.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\model\Book.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\model\BorrowItem.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\model\BorrowSlip.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\model\Category.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\model\Librarian.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\model\Publisher.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\model\Reader.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\repository\BookRepository.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\repository\BorrowItemRepository.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\repository\BorrowSlipRepository.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\repository\CategoryRepository.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\repository\LibrarianRepository.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\repository\PublisherRepository.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\repository\ReaderRepository.java
-G:\Other computers\My PC\University\Junior\Semester_2_t2\Application_Management\Week_1\proj-mng\waterfall\library-nhom2\src\main\java\com\ute\library\util\BcryptUtil.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/LibraryNhom2Application.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/config/SecurityConfig.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/controller/BookController.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/controller/LoginController.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/controller/ReaderController.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/controller/ReportController.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/controller/UiController.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/dao/ReportDao.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/dao/ReportDaoImpl.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/dto/BorrowedBookReportDTO.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/dto/CategoryOptionDTO.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/dto/OverdueBookReportDTO.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/dto/ReportFilterDTO.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/dto/ReportSummaryDTO.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/dto/TimeStatisticsDTO.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/dto/TopBorrowedBookDTO.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/model/Book.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/model/BookForm.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/model/BorrowItem.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/model/BorrowSlip.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/model/Category.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/model/Librarian.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/model/Publisher.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/model/Reader.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/model/ReaderForm.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/repository/BookRepository.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/repository/BorrowItemRepository.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/repository/BorrowSlipRepository.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/repository/CategoryRepository.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/repository/LibrarianRepository.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/repository/PublisherRepository.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/repository/ReaderRepository.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/service/ReportService.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/service/ReportServiceImpl.java
+/Users/harry/Documents/Management-Application-Project-Group-2/waterfall/library-nhom2/src/main/java/com/ute/library/util/BcryptUtil.java

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Báo cáo sách quá hạn - Library</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+</head>
+<body>
+<div class="container-flex">
+    <aside class="sidebar">
+        <div class="logo">📚 LMS</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/}" href="/" class="nav-item"><span>📊</span> Dashboard</a>
+            <a th:href="@{/books-manage}" href="/books-manage" class="nav-item"><span>📖</span> Quản lý Sách</a>
+            <a th:href="@{/members-manage}" href="/members-manage" class="nav-item"><span>👥</span> Quản lý Độc giả</a>
+            <a th:href="@{/loans-manage}" href="/loans-manage" class="nav-item"><span>🔄</span> Mượn/Trả</a>
+            <a th:href="@{/search}" href="/search" class="nav-item"><span>🔍</span> Tìm kiếm</a>
+            <a th:href="@{/reports}" href="/reports" class="nav-item active"><span>📈</span> Thống kê, báo cáo</a>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Báo cáo sách quá hạn</h2>
+            <a th:href="@{/reports}" href="/reports" class="btn">Quay lại tổng quan</a>
+        </header>
+
+        <section class="table-section" style="margin: 20px 40px;">
+            <h3>Lọc dữ liệu</h3>
+            <p class="alert-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+            <form th:action="@{/reports/overdue}" method="get" class="filter-form">
+                <div class="form-group">
+                    <label>Từ ngày mượn</label>
+                    <input type="date" name="fromDate" th:value="${filter.fromDate}" />
+                </div>
+                <div class="form-group">
+                    <label>Đến ngày mượn</label>
+                    <input type="date" name="toDate" th:value="${filter.toDate}" />
+                </div>
+                <div class="form-group">
+                    <label>Tên hoặc mã độc giả</label>
+                    <input type="text" name="readerKeyword" th:value="${filter.readerKeyword}" />
+                </div>
+                <div class="form-group">
+                    <label>Tên hoặc mã sách</label>
+                    <input type="text" name="bookKeyword" th:value="${filter.bookKeyword}" />
+                </div>
+                <div class="report-actions">
+                    <button type="submit" class="btn">Lọc</button>
+                    <a th:href="@{/reports/overdue}" href="/reports/overdue" class="btn btn-muted">Làm mới</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="table-section report-table-section">
+            <h3>Danh sách sách quá hạn chưa trả</h3>
+            <p class="empty-state" th:if="${#lists.isEmpty(overdueBooks)}">Không có sách quá hạn.</p>
+            <table th:if="${!#lists.isEmpty(overdueBooks)}">
+                <thead>
+                    <tr>
+                        <th>Mã phiếu</th>
+                        <th>Mã độc giả</th>
+                        <th>Tên độc giả</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Mã sách</th>
+                        <th>Tên sách</th>
+                        <th>Số lượng</th>
+                        <th>Ngày mượn</th>
+                        <th>Hạn trả</th>
+                        <th>Quá hạn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${overdueBooks}">
+                        <td th:text="${item.slipCode}">PM001</td>
+                        <td th:text="${item.readerCode}">DG001</td>
+                        <td th:text="${item.readerName}">Nguyễn Văn A</td>
+                        <td th:text="${item.email}">email@example.com</td>
+                        <td th:text="${item.phone}">0900000000</td>
+                        <td th:text="${item.bookCode}">S001</td>
+                        <td th:text="${item.bookTitle}">Java</td>
+                        <td th:text="${item.quantity}">1</td>
+                        <td th:text="${item.borrowDate}">2026-05-01</td>
+                        <td th:text="${item.dueDate}">2026-05-10</td>
+                        <td><span class="status-badge status-danger" th:text="${item.overdueDays + ' ngày'}">5 ngày</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>
+</body>
+</html>

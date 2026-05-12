@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Top sách được mượn - Library</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+</head>
+<body>
+<div class="container-flex">
+    <aside class="sidebar">
+        <div class="logo">📚 LMS</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/}" href="/" class="nav-item"><span>📊</span> Dashboard</a>
+            <a th:href="@{/books-manage}" href="/books-manage" class="nav-item"><span>📖</span> Quản lý Sách</a>
+            <a th:href="@{/members-manage}" href="/members-manage" class="nav-item"><span>👥</span> Quản lý Độc giả</a>
+            <a th:href="@{/loans-manage}" href="/loans-manage" class="nav-item"><span>🔄</span> Mượn/Trả</a>
+            <a th:href="@{/search}" href="/search" class="nav-item"><span>🔍</span> Tìm kiếm</a>
+            <a th:href="@{/reports}" href="/reports" class="nav-item active"><span>📈</span> Thống kê, báo cáo</a>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <h2>Top sách được mượn nhiều</h2>
+            <a th:href="@{/reports}" href="/reports" class="btn">Quay lại tổng quan</a>
+        </header>
+
+        <section class="table-section" style="margin: 20px 40px;">
+            <h3>Lọc dữ liệu</h3>
+            <p class="alert-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+            <form th:action="@{/reports/top-books}" method="get" class="filter-form">
+                <div class="form-group">
+                    <label>Từ ngày</label>
+                    <input type="date" name="fromDate" th:value="${filter.fromDate}" />
+                </div>
+                <div class="form-group">
+                    <label>Đến ngày</label>
+                    <input type="date" name="toDate" th:value="${filter.toDate}" />
+                </div>
+                <div class="form-group">
+                    <label>Thể loại</label>
+                    <select name="categoryId">
+                        <option value="">Tất cả</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.id}"
+                                th:text="${category.categoryName}"
+                                th:selected="${filter.categoryId != null and filter.categoryId == category.id}">
+                            Công nghệ
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Giới hạn top N</label>
+                    <input type="number" name="limit" min="1" max="100" th:value="${filter.limit != null ? filter.limit : 10}" />
+                </div>
+                <div class="report-actions">
+                    <button type="submit" class="btn">Lọc</button>
+                    <a th:href="@{/reports/top-books}" href="/reports/top-books" class="btn btn-muted">Làm mới</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="table-section report-table-section">
+            <h3>Kết quả xếp hạng</h3>
+            <p class="empty-state" th:if="${#lists.isEmpty(topBooks)}">Không có dữ liệu mượn sách.</p>
+            <table th:if="${!#lists.isEmpty(topBooks)}">
+                <thead>
+                    <tr>
+                        <th>Hạng</th>
+                        <th>Mã sách</th>
+                        <th>Tên sách</th>
+                        <th>Tác giả</th>
+                        <th>Thể loại</th>
+                        <th>Nhà xuất bản</th>
+                        <th>Lượt mượn</th>
+                        <th>Số lượng đã mượn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item, stat : ${topBooks}">
+                        <td th:text="${stat.count}">1</td>
+                        <td th:text="${item.bookCode}">S001</td>
+                        <td th:text="${item.bookTitle}">Java</td>
+                        <td th:text="${item.author}">Author</td>
+                        <td th:text="${item.categoryName}">Công nghệ</td>
+                        <td th:text="${item.publisherName}">NXB</td>
+                        <td th:text="${item.totalBorrowTimes}">3</td>
+                        <td th:text="${item.totalBorrowedQuantity}">5</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>
+</body>
+</html>
