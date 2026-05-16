@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>POS - Create Order</title>
+    <style>
+        body{font-family:Arial;margin:0;padding:0}
+        .container{display:flex;height:100vh}
+        .catalog{flex:1;padding:16px;overflow:auto}
+        .cart{width:360px;border-left:1px solid #ddd;padding:16px}
+        .product{border:1px solid #eee;padding:8px;margin:8px;display:inline-block;width:150px}
+        .cart-item{border-bottom:1px solid #eee;padding:8px}
+        .pay{background:#0a74da;color:#fff;padding:12px;text-align:center;margin-top:12px}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="catalog">
+        <h2>Products</h2>
+        <div>
+            <div th:each="p : ${products}" class="product">
+                <div><strong th:text="${p.productName}"></strong></div>
+                <div th:text="${p.basePrice}"></div>
+                <div style="margin-top:6px"><button type="button" th:attr="data-id=${p.productId},data-name=${p.productName},data-price=${p.basePrice}" class="add">Add</button></div>
+            </div>
+        </div>
+    </div>
+    <div class="cart">
+        <h3>Cart</h3>
+        <div id="items"></div>
+        <div style="margin-top:8px">Tax: <span id="tax">0</span></div>
+        <div class="pay" id="payBtn">Pay <span id="total">0</span></div>
+        <form id="checkoutForm" th:action="@{/pos/checkout}" method="post">
+            <input type="hidden" name="cartJson" id="cartJson" />
+        </form>
+    </div>
+</div>
+<script>
+    const cart = [];
+    function render(){
+        const el = document.getElementById('items'); el.innerHTML='';
+        let total=0;
+        cart.forEach((c, idx)=>{
+            const div = document.createElement('div'); div.className='cart-item';
+            div.innerHTML = `<div>${c.name} x ${c.quantity} - ${c.price*c.quantity}</div>`;
+            el.appendChild(div);
+            total += c.price*c.quantity;
+        });
+        document.getElementById('total').innerText = '₹ ' + total.toFixed(2);
+        document.getElementById('cartJson').value = JSON.stringify(cart.map(c=>({productId:c.id,quantity:c.quantity,size:'M',iceLevel:'100%',sugarLevel:'100%',temperature:'ICE'})));
+    }
+    document.addEventListener('click', e=>{
+        if(e.target.classList.contains('add')){
+            const id = parseInt(e.target.getAttribute('data-id'));
+            const name = e.target.getAttribute('data-name');
+            const price = parseFloat(e.target.getAttribute('data-price'));
+            const found = cart.find(x=>x.id===id);
+            if(found) found.quantity++;
+            else cart.push({id, name, price, quantity:1});
+            render();
+        }
+        if(e.target.id==='payBtn'){
+            if(cart.length===0) return alert('Cart empty');
+            document.getElementById('checkoutForm').submit();
+        }
+    });
+</script>
+</body>
+</html>
