@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        body{font-family:Arial;margin:0;padding:0}
+        .wrap{padding:16px}
+        .cards{display:flex;gap:12px}
+        .card{padding:12px;border:1px solid #eee;border-radius:6px;flex:1}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>Admin Dashboard</h1>
+    <div class="cards">
+        <div class="card">Total Orders: <strong th:text="${totalOrders}"></strong></div>
+        <div class="card">Total Products: <strong th:text="${totalProducts}"></strong></div>
+        <div class="card">Total Users: <strong th:text="${totalUsers}"></strong></div>
+    </div>
+</div>
+</body>
+</html>
