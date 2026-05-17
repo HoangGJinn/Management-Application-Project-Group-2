@@ -6,6 +6,7 @@ import com.management.coffee.model.CafeOrder;
 import com.management.coffee.model.OrderItem;
 import com.management.coffee.model.Product;
 import com.management.coffee.model.User;
+import com.management.coffee.repository.CategoryRepository;
 import com.management.coffee.repository.OrderItemRepository;
 import com.management.coffee.repository.OrderRepository;
 import com.management.coffee.repository.ProductRepository;
@@ -30,13 +31,15 @@ public class PosController {
     private static final Logger log = LoggerFactory.getLogger(PosController.class);
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public PosController(ProductRepository productRepository, UserRepository userRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
+    public PosController(ProductRepository productRepository, CategoryRepository categoryRepository, UserRepository userRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
@@ -47,6 +50,7 @@ public class PosController {
         Object role = session.getAttribute("role");
         if (role == null) return "redirect:/login";
         model.addAttribute("products", productRepository.findAll());
+        model.addAttribute("categories", categoryRepository.findAll());
         return "pos";
     }
 

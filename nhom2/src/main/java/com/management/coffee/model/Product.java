@@ -19,6 +19,9 @@ public class Product {
     @Column(name = "product_name", length = 100)
     private String productName;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     @Column(name = "base_price", nullable = false)
     private BigDecimal basePrice;
 
@@ -35,6 +38,8 @@ public class Product {
     public void setCategory(Category category) { this.category = category; }
     public String getProductName() { return productName; }
     public void setProductName(String productName) { this.productName = productName; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
     public BigDecimal getBasePrice() { return basePrice; }
     public void setBasePrice(BigDecimal basePrice) { this.basePrice = basePrice; }
     public String getImageUrl() { return imageUrl; }
