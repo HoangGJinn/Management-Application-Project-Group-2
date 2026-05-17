@@ -26,7 +26,7 @@ CREATE TABLE users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
-    role ENUM('ADMIN', 'STAFF', "CUSTOMER") DEFAULT 'STAFF',
+    role ENUM('ADMIN', 'STAFF') DEFAULT 'STAFF',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -36,12 +36,10 @@ CREATE TABLE users (
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     staff_id INT, -- Ai là người tạo đơn (có thể NULL nếu khách tự order)
-	customer_id INT,
     total_amount DECIMAL(10, 2) NOT NULL, -- Tổng tiền của đơn
-   
+	order_status ENUM('Preparing', 'Ready', 'Served', 'Cancelled') DEFAULT 'Preparing',
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (staff_id) REFERENCES users(user_id) ON DELETE SET NULL,
-    FOREIGN KEY (customer_id) REFERENCES users(user_id) ON DELETE SET NULL
+    FOREIGN KEY (staff_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 CREATE TABLE order_items (
