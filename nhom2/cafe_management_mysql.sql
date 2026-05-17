@@ -14,6 +14,7 @@ CREATE TABLE products (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     category_id INT,
     product_name VARCHAR(100),
+    description TEXT,
     base_price DECIMAL(10, 2) NOT NULL,
     image_url VARCHAR(255),
 	status ENUM('ACTIVE', 'OUT_OF_STOCK', 'INACTIVE') DEFAULT 'ACTIVE',
