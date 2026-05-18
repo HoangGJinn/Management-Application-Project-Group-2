@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử Đơn hàng</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #faf9f6;
+        }
+
+        .container-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #3d2817;
+            padding: 20px 15px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #3d2817;
+        }
+
+        .logo-text h3 {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .logo-text small {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav a.active {
+            background-color: #8B6F47;
+            color: white;
+            font-weight: 600;
+        }
+
+        .sidebar-nav a.active::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background-color: white;
+            border-radius: 2px;
+            margin-left: -15px;
+        }
+
+        .sidebar-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-section h1 {
+            font-size: 28px;
+            color: #2c1810;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .search-box {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            width: 250px;
+            font-size: 14px;
+        }
+
+        .search-box::placeholder {
+            color: #999;
+        }
+
+        .icon-btn {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .icon-btn:hover {
+            background-color: #f5f3f0;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0d9d0;
+            padding-bottom: 15px;
+        }
+
+        .filter-tab {
+            padding: 8px 20px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .filter-tab:hover {
+            color: #8B6F47;
+        }
+
+        .filter-tab.active {
+            color: #2c1810;
+            border-bottom-color: #8B6F47;
+            font-weight: 600;
+        }
+
+        .filter-status-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: flex-end;
+        }
+
+        .status-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .status-btn:hover {
+            border-color: #8B6F47;
+            color: #8B6F47;
+        }
+
+        .status-btn.active {
+            background-color: #8B6F47;
+            color: white;
+            border-color: #8B6F47;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f5f3f0;
+            border-bottom: 1px solid #e0d9d0;
+        }
+
+        th {
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0ebe0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background-color: #faf9f6;
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: #2c1810;
+        }
+
+        .time-text {
+            font-size: 13px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .status-completed {
+            background-color: #d4f0d4;
+            color: #2c8c2c;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .amount-text {
+            font-weight: 600;
+            color: #2c1810;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            background: none;
+            border: 1px solid #8B6F47;
+            color: #8B6F47;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: #8B6F47;
+            color: white;
+        }
+
+        .pagination {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .footer-summary {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c1810;
+        }
+
+        .revenue-text {
+            color: #2c8c2c;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            padding: 12px 25px;
+            background-color: #8B6F47;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background-color: #6b5635;
+        }
+
+        .btn-secondary {
+            padding: 12px 25px;
+            background-color: #bfu9974;
+            color: #3d2817;
+            border: 1px solid #8B6F47;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #a89968;
+        }
+
+        .sidebar-bottom {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-bottom a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-bottom a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+                padding: 20px;
+            }
+
+            .header-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .footer-summary {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="/" class="logo">
+            <div class="logo-icon">☕</div>
+            <div class="logo-text">
+                <h3>Artisanal Cafe</h3>
+                <small>Quản trị viên</small>
+            </div>
+        </a>
+
+        <ul class="sidebar-nav">
+            <li><a href="/admin"><span class="sidebar-icon">📊</span> Bảng điều khiển</a></li>
+            <li><a href="/menu"><span class="sidebar-icon">🍽️</span> Thực đơn</a></li>
+            <li><a href="/order-history" class="active"><span class="sidebar-icon">📋</span> Lịch sử đơn hàng</a></li>
+            <li><a href="/reports"><span class="sidebar-icon">📈</span> Báo cáo</a></li>
+        </ul>
+
+        <div class="sidebar-bottom">
+<!--            <a href="/"><span class="sidebar-icon">⚙️</span> Cài đặt</a>-->
+            <a href="/logout"><span class="sidebar-icon">🚪</span> Đăng xuất</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header-section">
+            <h1>Lịch sử Đơn hàng</h1>
+            <div class="header-actions">
+                <input type="text" class="search-box" placeholder="Tìm kiếm đơn hàng...">
+                <button class="icon-btn">🔔</button>
+                <button class="icon-btn">⚙️</button>
+                <button class="icon-btn">👤</button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-tabs">
+            <form style="display: contents;" method="get" action="/order-history">
+                <button type="submit" name="period" value="today" class="filter-tab" th:classappend="${period == 'today' ? 'active' : ''}">Hôm nay</button>
+                <button type="submit" name="period" value="yesterday" class="filter-tab" th:classappend="${period == 'yesterday' ? 'active' : ''}">Hôm qua</button>
+                <button type="submit" name="period" value="7days" class="filter-tab" th:classappend="${period == '7days' ? 'active' : ''}">7 ngày qua</button>
+            </form>
+        </div>
+
+        <div class="filter-status-buttons">
+            <form style="display: flex; gap: 10px;" method="get" action="/order-history">
+                <input type="hidden" name="period" th:value="${period}">
+                <button type="submit" name="status" value="all" class="status-btn" th:classappend="${status == 'all' ? 'active' : ''}">Tất cả</button>
+                <button type="submit" name="status" value="completed" class="status-btn" th:classappend="${status == 'completed' ? 'active' : ''}">Đã hoàn thành</button>
+                <button type="submit" name="status" value="cancelled" class="status-btn" th:classappend="${status == 'cancelled' ? 'active' : ''}">Đã hủy</button>
+            </form>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>MÃ ĐƠN HÀNG</th>
+                        <th>THỜI GIAN</th>
+                        <th>THANH TOÁN</th>
+                        <th>SỐ MÓN</th>
+                        <th>TỔNG TIỀN</th>
+                        <th>TRẠNG THÁI</th>
+                        <th>THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${orders.isEmpty()}">
+                        <td colspan="7" style="text-align: center; padding: 30px; color: #999;">Không có đơn hàng nào</td>
+                    </tr>
+                    <tr th:each="order : ${orders}">
+                        <td class="order-id" th:text="${order.orderId}">-</td>
+                        <td>
+                            <div th:text="${#temporals.format(order.orderDate, 'HH:mm')} + ' - Hôm nay'" class="time-text"></div>
+                        </td>
+                        <td>
+                            <span th:text="${order.paymentStatus}">-</span>
+                        </td>
+                        <td th:text="${order.itemCount}">0</td>
+                        <td class="amount-text" th:text="${order.totalAmount} + 'đ'">0đ</td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${order.paymentStatus == 'COMPLETED' ? 'status-completed' : (order.paymentStatus == 'CANCELLED' ? 'status-cancelled' : 'status-pending')}"
+                                  th:text="${order.paymentStatus == 'COMPLETED' ? 'Đã hoàn thành' : (order.paymentStatus == 'CANCELLED' ? 'Đã hủy' : 'Chờ xử lý')}">-</span>
+                        </td>
+                        <td>
+                            <button class="action-btn" th:onclick="'viewOrderDetails(' + ${order.orderIdNum} + ')'">Xem chi tiết</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination" th:if="${orders.size() > 0}">
+                <span th:text="'Hiển thị ' + ${orders.size()} + ' trên 42 đơn hàng trong ngày'"></span>
+            </div>
+        </div>
+
+        <!-- Footer Summary -->
+        <div class="footer-summary">
+            <div class="summary-item">
+                <div class="summary-label">TỔNG ĐƠN HÀNG</div>
+                <div class="summary-value" th:text="${totalOrders}">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">DOANH THU HÔM NAY</div>
+                <div class="summary-value revenue-text" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</div>
+            </div>
+<!--            <div class="action-bar">-->
+<!--                <button class="btn-secondary" onclick="exportReport()">📥 Xuất báo cáo</button>-->
+<!--                <button class="btn-primary" onclick="createNewOrder()">➕ Tạo Đơn Mới</button>-->
+<!--            </div>-->
+        </div>
+    </div>
+</div>
+
+<script>
+    function viewOrderDetails(orderId) {
+        alert('Xem chi tiết đơn hàng #CF' + String(orderId).padStart(4, '0'));
+        // TODO: Implement order detail modal/page
+    }
+
+    function exportReport() {
+        alert('Đang xuất báo cáo...');
+        // TODO: Implement export functionality
+    }
+
+    function createNewOrder() {
+        window.location.href = '/pos';
+    }
+
+    // Search functionality
+    document.querySelector('.search-box').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            if (row.textContent.toLowerCase().includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
