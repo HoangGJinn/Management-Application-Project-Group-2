@@ -54,6 +54,22 @@ public class PosController {
         return "pos";
     }
 
+    @GetMapping("/pos_menu")
+    public String posMenuPage(Model model, HttpSession session) {
+        Object role = session.getAttribute("role");
+        if (role == null) return "redirect:/login";
+        model.addAttribute("products", productRepository.findAll());
+        model.addAttribute("categories", categoryRepository.findAll());
+        return "pos_menu";
+    }
+
+    @GetMapping("/pos_order")
+    public String posOrderPage(HttpSession session) {
+        Object role = session.getAttribute("role");
+        if (role == null) return "redirect:/login";
+        return "pos_order";
+    }
+
     @PostMapping("/pos/checkout")
     @Transactional
     public String checkout(@RequestParam String cartJson, HttpSession session) throws Exception {
@@ -84,7 +100,7 @@ public class PosController {
         order.setTotalAmount(total);
         order = orderRepository.save(order);
         log.info("Order saved successfully: orderId={}, staffId={}, totalAmount={}", order.getOrderId(), staffId, total);
-        return "redirect:/pos";
+        return "redirect:/pos_order";
     }
 
     public static class CartItem {

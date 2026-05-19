@@ -98,22 +98,6 @@
             line-height: 1.1;
         }
 
-        .staff-badge {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            padding: 10px 14px;
-            color: var(--muted);
-            white-space: nowrap;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 340px;
-            gap: 22px;
-            align-items: start;
-        }
-
         .toolbar {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -234,8 +218,7 @@
             font-weight: 800;
         }
 
-        .select-btn,
-        .pay-btn {
+        .select-btn {
             border: 0;
             background: var(--accent);
             color: #fff;
@@ -245,8 +228,7 @@
             cursor: pointer;
         }
 
-        .select-btn:hover,
-        .pay-btn:hover {
+        .select-btn:hover {
             background: var(--accent-dark);
         }
 
@@ -272,67 +254,33 @@
             text-align: center;
         }
 
-        .order-panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            padding: 18px;
-            position: sticky;
-            top: 24px;
-        }
-
-        .order-panel h2 {
-            margin: 0 0 14px;
-            font-size: 22px;
-        }
-
-        .order-items {
-            display: grid;
-            gap: 10px;
-            min-height: 80px;
-        }
-
-        .order-empty {
-            color: var(--muted);
-            font-size: 14px;
-            padding: 16px 0;
-        }
-
-        .order-item {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
-            gap: 12px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .order-item-name {
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .order-item-meta {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .order-total {
+        .top-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 2px solid var(--border);
-            padding-top: 14px;
-            margin-top: 16px;
-            font-size: 18px;
-            font-weight: 800;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: flex-end;
         }
 
-        .pay-btn {
-            width: 100%;
-            margin-top: 14px;
-            padding: 13px;
-            font-size: 15px;
+        .view-btn {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .view-btn:hover {
+            background: #f0e8e0;
+        }
+
+        .view-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
         }
 
         /* Modal Styles */
@@ -512,14 +460,6 @@
                 position: static;
                 height: auto;
             }
-
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .order-panel {
-                position: static;
-            }
         }
 
         @media (max-width: 640px) {
@@ -543,10 +483,9 @@
     <aside class="sidebar">
         <div class="brand">BrewBean</div>
         <nav class="nav" aria-label="Staff navigation">
+            <a href="/pos_menu" class="active">Menu</a>
+            <a href="/pos_order">Order</a>
             <a href="/pos">Dashboard</a>
-            <a href="/pos" class="active">Menu</a>
-            <a href="/pos">Orders</a>
-            <a href="/pos">Customers</a>
             <a href="/logout">Logout</a>
         </nav>
     </aside>
@@ -554,71 +493,58 @@
     <main class="main">
         <header class="topbar">
             <div>
-                <p class="eyebrow">Staff POS</p>
+                <p class="eyebrow">Staff POS - Menu</p>
                 <h1>Café Shop Menu</h1>
             </div>
         </header>
 
-        <div class="content-grid">
-            <section aria-label="Menu catalog">
-                <div class="toolbar">
-                    <div class="category-filter" aria-label="Category filter">
-                        <button type="button" class="category-btn active" data-category="All">All</button>
-                        <button type="button" class="category-btn" data-category="Coffee">Coffee</button>
-                        <button type="button" class="category-btn" data-category="Tea">Tea</button>
-                        <button type="button" class="category-btn" data-category="Juice">Juice</button>
-                        <button type="button" class="category-btn" data-category="Cake">Cake</button>
-                        <button type="button" class="category-btn" data-category="Food">Food</button>
-                        <button type="button" class="category-btn" data-category="Other">Other</button>
-                    </div>
-                    <div class="search-row">
-                        <input id="menuSearch" type="search" placeholder="Search menu item by name">
-                    </div>
-                </div>
-
-                <div id="menuGrid" class="menu-grid">
-                    <article th:each="p : ${products}"
-                             class="menu-card"
-                             th:classappend="${p.status.name() == 'OUT_OF_STOCK'} ? ' is-disabled' : ''"
-                             th:attr="data-name=${p.productName}, data-category=${p.category != null ? p.category.categoryName : 'Other'}, data-status=${p.status.name()}">
-                        <img class="menu-image"
-                             th:src="${p.imageUrl != null && !#strings.isEmpty(p.imageUrl) ? p.imageUrl : 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80'}"
-                             th:alt="${p.productName}">
-                        <div class="menu-body">
-                            <div class="menu-meta" th:text="${p.category != null ? p.category.categoryName : 'Other'}">Coffee</div>
-                            <h2 class="menu-title" th:text="${p.productName}">Black Coffee</h2>
-                            <p class="menu-desc" th:text="${p.description != null ? p.description : 'Freshly prepared cafe item.'}">Freshly prepared cafe item.</p>
-                            <div class="stock-label" th:if="${p.status.name() == 'OUT_OF_STOCK'}">Out of stock</div>
-                            <div class="menu-footer">
-                                <div class="price" th:text="${'$' + #numbers.formatDecimal(p.basePrice, 1, 2)}">$3.75</div>
-                                <button type="button"
-                                        class="select-btn"
-                                        th:disabled="${p.status.name() == 'OUT_OF_STOCK'}"
-                                        th:attr="data-id=${p.productId}, data-name=${p.productName}, data-price=${p.basePrice}">
-                                    Add to Order
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div id="emptyState" class="empty-state">No menu items found.</div>
-            </section>
-
-            <aside class="order-panel" aria-label="Current order">
-                <h2>Current Order</h2>
-                <div id="orderItems" class="order-items">
-                    <div class="order-empty">No items selected.</div>
-                </div>
-                <div class="order-total">
-                    <span>Total</span>
-                    <span id="orderTotal">$0.00</span>
-                </div>
-                <form id="checkoutForm" th:action="@{/pos/checkout}" method="post">
-                    <input type="hidden" name="cartJson" id="cartJson">
-                    <button type="submit" class="pay-btn">Checkout</button>
-                </form>
-            </aside>
+        <div class="top-actions">
+            <a href="/pos_order" class="view-btn">View Order</a>
         </div>
+
+        <section aria-label="Menu catalog">
+            <div class="toolbar">
+                <div class="category-filter" aria-label="Category filter">
+                    <button type="button" class="category-btn active" data-category="All">All</button>
+                    <button type="button" class="category-btn" data-category="Coffee">Coffee</button>
+                    <button type="button" class="category-btn" data-category="Tea">Tea</button>
+                    <button type="button" class="category-btn" data-category="Juice">Juice</button>
+                    <button type="button" class="category-btn" data-category="Cake">Cake</button>
+                    <button type="button" class="category-btn" data-category="Food">Food</button>
+                    <button type="button" class="category-btn" data-category="Other">Other</button>
+                </div>
+                <div class="search-row">
+                    <input id="menuSearch" type="search" placeholder="Search menu item by name">
+                </div>
+            </div>
+
+            <div id="menuGrid" class="menu-grid">
+                <article th:each="p : ${products}"
+                         class="menu-card"
+                         th:classappend="${p.status.name() == 'OUT_OF_STOCK'} ? ' is-disabled' : ''"
+                         th:attr="data-name=${p.productName}, data-category=${p.category != null ? p.category.categoryName : 'Other'}, data-status=${p.status.name()}">
+                    <img class="menu-image"
+                         th:src="${p.imageUrl != null && !#strings.isEmpty(p.imageUrl) ? p.imageUrl : 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80'}"
+                         th:alt="${p.productName}">
+                    <div class="menu-body">
+                        <div class="menu-meta" th:text="${p.category != null ? p.category.categoryName : 'Other'}">Coffee</div>
+                        <h2 class="menu-title" th:text="${p.productName}">Black Coffee</h2>
+                        <p class="menu-desc" th:text="${p.description != null ? p.description : 'Freshly prepared cafe item.'}">Freshly prepared cafe item.</p>
+                        <div class="stock-label" th:if="${p.status.name() == 'OUT_OF_STOCK'}">Out of stock</div>
+                        <div class="menu-footer">
+                            <div class="price" th:text="${'$' + #numbers.formatDecimal(p.basePrice, 1, 2)}">$3.75</div>
+                            <button type="button"
+                                    class="select-btn"
+                                    th:disabled="${p.status.name() == 'OUT_OF_STOCK'}"
+                                    th:attr="data-id=${p.productId}, data-name=${p.productName}, data-price=${p.basePrice}">
+                                Add to Order
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div id="emptyState" class="empty-state">No menu items found.</div>
+        </section>
     </main>
 </div>
 
@@ -629,7 +555,6 @@
             <h2 id="modalTitle">Customize Order</h2>
         </div>
         <div class="modal-body">
-            <!-- Size Selection -->
             <div class="customize-section">
                 <label class="customize-label">Size</label>
                 <div class="customize-options" id="sizeOptions">
@@ -639,7 +564,6 @@
                 </div>
             </div>
 
-            <!-- Ice Level Selection -->
             <div class="customize-section">
                 <label class="customize-label">Ice Level</label>
                 <div class="customize-options" id="iceOptions">
@@ -649,7 +573,6 @@
                 </div>
             </div>
 
-            <!-- Sugar Level Selection -->
             <div class="customize-section">
                 <label class="customize-label">Sugar Level</label>
                 <div class="customize-options" id="sugarOptions">
@@ -659,7 +582,6 @@
                 </div>
             </div>
 
-            <!-- Temperature Selection -->
             <div class="customize-section">
                 <label class="customize-label">Temperature</label>
                 <div class="customize-options" id="temperatureOptions">
@@ -668,7 +590,6 @@
                 </div>
             </div>
 
-            <!-- Quantity Selection -->
             <div class="customize-section">
                 <label class="customize-label">Quantity</label>
                 <div class="quantity-control">
@@ -690,12 +611,7 @@
     const searchInput = document.getElementById('menuSearch');
     const menuCards = document.querySelectorAll('.menu-card');
     const emptyState = document.getElementById('emptyState');
-    const orderItems = document.getElementById('orderItems');
-    const orderTotal = document.getElementById('orderTotal');
-    const cartJson = document.getElementById('cartJson');
-    const checkoutForm = document.getElementById('checkoutForm');
 
-    // Modal elements
     const customizeModal = document.getElementById('customizeModal');
     const modalTitle = document.getElementById('modalTitle');
     const sizeOptions = document.getElementById('sizeOptions');
@@ -710,11 +626,16 @@
 
     let selectedCategory = 'All';
     let keyword = '';
-    const cart = [];
-    let pendingItem = null; // Store item being customized
+    let pendingItem = null;
 
-    function formatMoney(value) {
-        return '$' + value.toFixed(2);
+    // Get cart from sessionStorage
+    function getCart() {
+        const cartStr = sessionStorage.getItem('posCart');
+        return cartStr ? JSON.parse(cartStr) : [];
+    }
+
+    function saveCart(cart) {
+        sessionStorage.setItem('posCart', JSON.stringify(cart));
     }
 
     function applyFilters() {
@@ -737,46 +658,6 @@
         emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
-    function renderOrder() {
-        orderItems.innerHTML = '';
-        let total = 0;
-        let totalQuantity = 0;
-
-        if (cart.length === 0) {
-            orderItems.innerHTML = '<div class="order-empty">No items selected.</div>';
-        }
-
-        cart.forEach((item, index) => {
-            total += item.price * item.quantity;
-            totalQuantity += item.quantity;
-
-            const row = document.createElement('div');
-            row.className = 'order-item';
-            row.style.position = 'relative';
-            row.innerHTML = `
-                <div>
-                    <div class="order-item-name">${item.name}</div>
-                    <div class="order-item-meta">${item.quantity} x ${formatMoney(item.price)}</div>
-                    <div class="order-item-meta" style="font-size: 12px; color: #c7793f; margin-top: 4px;">
-                        ${item.size} | Ice: ${item.iceLevel} | Sugar: ${item.sugarLevel} | ${item.temperature}
-                    </div>
-                </div>
-                <strong>${formatMoney(item.price * item.quantity)}</strong>
-            `;
-            orderItems.appendChild(row);
-        });
-
-        orderTotal.innerText = `${formatMoney(total)} (${totalQuantity} item${totalQuantity === 1 ? '' : 's'})`;
-        cartJson.value = JSON.stringify(cart.map(item => ({
-            productId: item.id,
-            quantity: item.quantity,
-            size: item.size,
-            iceLevel: item.iceLevel,
-            sugarLevel: item.sugarLevel,
-            temperature: item.temperature
-        })));
-    }
-
     function openCustomizeModal(productId, productName, productPrice) {
         pendingItem = {
             id: productId,
@@ -792,10 +673,7 @@
         modalTitle.textContent = `Customize: ${productName}`;
         quantityInput.value = 1;
 
-        // Reset selections
         document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-
-        // Set default selections
         sizeOptions.querySelector('[data-value="M"]').classList.add('selected');
         iceOptions.querySelector('[data-value="100%"]').classList.add('selected');
         sugarOptions.querySelector('[data-value="100%"]').classList.add('selected');
@@ -809,81 +687,62 @@
         pendingItem = null;
     }
 
-    // Size option buttons
     sizeOptions.addEventListener('click', (e) => {
         if (e.target.classList.contains('option-btn')) {
             sizeOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
             e.target.classList.add('selected');
-            if (pendingItem) {
-                pendingItem.size = e.target.dataset.value;
-            }
+            if (pendingItem) pendingItem.size = e.target.dataset.value;
         }
     });
 
-    // Ice level option buttons
     iceOptions.addEventListener('click', (e) => {
         if (e.target.classList.contains('option-btn')) {
             iceOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
             e.target.classList.add('selected');
-            if (pendingItem) {
-                pendingItem.iceLevel = e.target.dataset.value;
-            }
+            if (pendingItem) pendingItem.iceLevel = e.target.dataset.value;
         }
     });
 
-    // Sugar level option buttons
     sugarOptions.addEventListener('click', (e) => {
         if (e.target.classList.contains('option-btn')) {
             sugarOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
             e.target.classList.add('selected');
-            if (pendingItem) {
-                pendingItem.sugarLevel = e.target.dataset.value;
-            }
+            if (pendingItem) pendingItem.sugarLevel = e.target.dataset.value;
         }
     });
 
-    // Temperature option buttons
     temperatureOptions.addEventListener('click', (e) => {
         if (e.target.classList.contains('option-btn')) {
             temperatureOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
             e.target.classList.add('selected');
-            if (pendingItem) {
-                pendingItem.temperature = e.target.dataset.value;
-            }
+            if (pendingItem) pendingItem.temperature = e.target.dataset.value;
         }
     });
 
-    // Quantity controls
     decreaseQtyBtn.addEventListener('click', () => {
         const value = Math.max(1, parseInt(quantityInput.value) - 1);
         quantityInput.value = value;
-        if (pendingItem) {
-            pendingItem.quantity = value;
-        }
+        if (pendingItem) pendingItem.quantity = value;
     });
 
     increaseQtyBtn.addEventListener('click', () => {
         const value = Math.min(99, parseInt(quantityInput.value) + 1);
         quantityInput.value = value;
-        if (pendingItem) {
-            pendingItem.quantity = value;
-        }
+        if (pendingItem) pendingItem.quantity = value;
     });
 
     quantityInput.addEventListener('change', () => {
         let value = parseInt(quantityInput.value) || 1;
         value = Math.max(1, Math.min(99, value));
         quantityInput.value = value;
-        if (pendingItem) {
-            pendingItem.quantity = value;
-        }
+        if (pendingItem) pendingItem.quantity = value;
     });
 
-    // Modal buttons
     cancelCustomizeBtn.addEventListener('click', closeCustomizeModal);
 
     confirmCustomizeBtn.addEventListener('click', () => {
         if (pendingItem) {
+            const cart = getCart();
             const existingItem = cart.find(item =>
                 item.id === pendingItem.id &&
                 item.size === pendingItem.size &&
@@ -898,19 +757,16 @@
                 cart.push(pendingItem);
             }
 
-            renderOrder();
+            saveCart(cart);
+            alert('Item added to order!');
             closeCustomizeModal();
         }
     });
 
-    // Close modal when clicking outside
     customizeModal.addEventListener('click', (e) => {
-        if (e.target === customizeModal) {
-            closeCustomizeModal();
-        }
+        if (e.target === customizeModal) closeCustomizeModal();
     });
 
-    // Category filters
     categoryButtons.forEach(button => {
         button.addEventListener('click', () => {
             selectedCategory = button.dataset.category;
@@ -920,18 +776,14 @@
         });
     });
 
-    // Search input
     searchInput.addEventListener('input', event => {
         keyword = event.target.value;
         applyFilters();
     });
 
-    // Add to order - now opens customization modal
     document.addEventListener('click', event => {
         const button = event.target.closest('.select-btn');
-        if (!button || button.disabled) {
-            return;
-        }
+        if (!button || button.disabled) return;
 
         const id = Number(button.dataset.id);
         const name = button.dataset.name;
@@ -940,16 +792,8 @@
         openCustomizeModal(id, name, price);
     });
 
-    // Checkout form validation
-    checkoutForm.addEventListener('submit', event => {
-        if (cart.length === 0) {
-            event.preventDefault();
-            alert('Please select at least one menu item.');
-        }
-    });
-
     applyFilters();
-    renderOrder();
 </script>
 </body>
 </html>
+
