@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quầy Giao Đồ - Artisanal Cafe</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f3f0;
+            color: #2a1810;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 240px;
+            background: #2a1810; 
+            color: white;
+            padding: 24px 16px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+        .logo { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; font-size: 14px; }
+        .logo-icon { width: 32px; height: 32px; background: #f57c00; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+        .logo-text { font-weight: 600; }
+        .logo-subtext { font-size: 12px; color: rgba(255, 255, 255, 0.7); }
+        .nav-menu { list-style: none; margin-bottom: 24px; }
+        .nav-item { margin-bottom: 8px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: rgba(255, 255, 255, 0.8); text-decoration: none; border-radius: 8px; }
+        .nav-link.active { background: #4a2a18; color: white; }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            margin-left: 240px;
+            padding: 24px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .header-title { font-size: 28px; font-weight: 700; }
+        .header-subtitle { color: #8a7668; font-size: 14px; margin-top: 5px; }
+
+        /* List / Table Layout */
+        .order-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-list th, .order-list td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0ebe5;
+            vertical-align: top;
+        }
+
+        .order-list th {
+            background: #fffaf5;
+            font-weight: 600;
+            color: #6f6258;
+            font-size: 14px;
+        }
+
+        .order-list tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .order-id { font-size: 16px; font-weight: 700; color: #f57c00; }
+        .order-time { font-size: 13px; color: #666; font-weight: 500; }
+        .item-name { font-weight: 600; font-size: 15px; display: inline-block; }
+        .item-qty { background: #fff3e0; color: #e65100; padding: 2px 6px; border-radius: 4px; font-size: 12px; margin-left: 8px; }
+        .item-opts { font-size: 13px; color: #6f6258; display: block; margin-top: 4px; }
+
+        .btn-ready {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .btn-ready:hover { background: #1565c0; }
+        
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+            color: #8a7668;
+            font-size: 16px;
+            border: 2px dashed #e0d5cc;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo">
+        <div class="logo-icon">P</div>
+        <div>
+            <div class="logo-text">Artisanal Cafe</div>
+            <div class="logo-subtext">Quầy Giao Đồ</div>
+        </div>
+    </div>
+    <ul class="nav-menu">
+        <li class="nav-item"><a href="/kitchen" class="nav-link">Đang pha chế (Preparing)</a></li>
+        <li class="nav-item"><a href="/pickup" class="nav-link active">Quầy giao (Ready)</a></li>
+        <li class="nav-item"><a href="/pos" class="nav-link">Về trang POS</a></li>
+    </ul>
+</aside>
+
+<main class="main">
+    <div class="header">
+        <div>
+            <h1 class="header-title">Đơn hàng chờ giao (Ready)</h1>
+            <div class="header-subtitle">Danh sách các đơn Bếp đã làm xong. Gọi khách và nhấn "Đã giao khách" để hoàn tất.</div>
+        </div>
+        <div style="font-weight: 600; color: #1976d2;" id="clock">--:--:--</div>
+    </div>
+
+    <div id="orderContainer">
+        <div class="empty-state">Đang tải dữ liệu...</div>
+    </div>
+</main>
+
+<script>
+    function updateClock() {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('vi-VN');
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    const orderContainer = document.getElementById('orderContainer');
+
+    function formatTime(dateString) {
+        if(!dateString) return '';
+        const d = new Date(dateString);
+        return d.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
+    }
+
+    async function loadOrders() {
+        try {
+            const res = await fetch('/api/orders/status/Ready');
+            if (!res.ok) throw new Error('Network error');
+            const orders = await res.json();
+            
+            if (orders.length === 0) {
+                orderContainer.innerHTML = '<div class="empty-state">Hiện không có đơn nào đang chờ giao khách.</div>';
+                return;
+            }
+
+            let html = `
+                <table class="order-list">
+                    <thead>
+                        <tr>
+                            <th>Mã Đơn</th>
+                            <th>Thời Gian</th>
+                            <th>Chi Tiết Món</th>
+                            <th style="text-align: right;">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            orders.forEach(o => {
+                let itemsHtml = '';
+                if(o.items && o.items.length > 0) {
+                    o.items.forEach((item, idx) => {
+                        const isLast = idx === o.items.length - 1;
+                        itemsHtml += `
+                            <div style="margin-bottom: ${isLast ? '0' : '12px'}; padding-bottom: ${isLast ? '0' : '12px'}; border-bottom: ${isLast ? 'none' : '1px dashed #e0d5cc'};">
+                                <div>
+                                    <span class="item-name">${item.product ? item.product.productName : 'Món'}</span>
+                                    <span class="item-qty">x${item.quantity}</span>
+                                </div>
+                                <div class="item-opts">
+                                    Size: ${item.size || 'M'} | Đá: ${item.iceLevel || '100%'} | Đường: ${item.sugarLevel || '100%'} | Loại: ${item.temperature || 'ICE'}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                html += `
+                    <tr>
+                        <td><span class="order-id">#CF${String(o.orderId).padStart(4, '0')}</span></td>
+                        <td><span class="order-time">${formatTime(o.orderDate)}</span></td>
+                        <td>${itemsHtml}</td>
+                        <td style="text-align: right;">
+                            <button class="btn-ready" onclick="markServed(${o.orderId})">Đã Giao Khách</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            html += `</tbody></table>`;
+            orderContainer.innerHTML = html;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function markServed(id) {
+        if(!confirm('Xác nhận ĐÃ GIAO ĐỒ cho đơn #' + id + '?')) return;
+        try {
+            const res = await fetch(`/api/orders/${id}/status?status=Served`, { method: 'PUT' });
+            if (res.ok) {
+                loadOrders(); // Tải lại ngay
+            } else {
+                alert('Có lỗi xảy ra');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // Tải lần đầu và set interval tự động làm mới mỗi 5 giây
+    loadOrders();
+    setInterval(loadOrders, 5000);
+</script>
+</body>
+</html>

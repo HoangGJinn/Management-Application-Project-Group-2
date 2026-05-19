@@ -603,6 +603,18 @@
                 <span>Bán hàng</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="/kitchen" class="nav-link">
+                <span>Bếp</span>
+                <span>Pha chế</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/pickup" class="nav-link">
+                <span>Giao</span>
+                <span>Chờ lấy</span>
+            </a>
+        </li>
     </ul>
 
     <div class="divider"></div>
@@ -699,7 +711,22 @@
             </div>
             <form id="checkoutForm" th:action="@{/pos/checkout}" method="post">
                 <input type="hidden" name="cartJson" id="cartJson">
-                <button type="submit" class="pay-btn">Thanh toán</button>
+                <input type="hidden" name="paymentMethod" id="paymentMethodInput" value="CASH">
+                
+                <div style="margin-top: 16px; border-top: 1px dashed #e0d5cc; padding-top: 16px;">
+                    <div style="font-size: 13px; font-weight: 600; color: #6f6258; margin-bottom: 8px;">Phương thức thanh toán</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                        <button type="button" id="btnSelectCash" style="padding: 10px; border-radius: 8px; border: 2px solid #8B6F47; background: #fffaf5; color: #8B6F47; font-weight: 600; cursor: pointer; transition: all 0.2s;">Tiền mặt</button>
+                        <button type="button" id="btnSelectVNPay" style="padding: 10px; border-radius: 8px; border: 1px solid #e0d5cc; background: white; color: #666; font-weight: 600; cursor: pointer; transition: all 0.2s;">VNPAY QR</button>
+                    </div>
+                </div>
+                
+                <div id="qrZone" style="display: none; text-align: center; margin-bottom: 16px; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e0d5cc;">
+                    <img id="qrImage" src="" style="width: 100%; max-width: 180px; margin: 0 auto; display: block;" />
+                    <p style="font-size: 12px; color: #666; margin-top: 8px;">Nhân viên kiểm tra tiền trước khi xác nhận</p>
+                </div>
+
+                <button type="submit" id="btnSubmitCheckout" class="pay-btn">Thanh toán (Tiền mặt)</button>
             </form>
         </aside>
     </div>
@@ -933,6 +960,10 @@
 
         orderTotal.innerText = formatMoney(total);
         updateCartJson();
+        if (document.getElementById('paymentMethodInput') && document.getElementById('paymentMethodInput').value === 'VNPAY') {
+            const qrImage = document.getElementById('qrImage');
+            if(qrImage) qrImage.src = `https://img.vietqr.io/image/970436-0351000626359-compact2.png?amount=${total}&addInfo=ThanhToanPOS`;
+        }
     }
 
     categoryButtons.forEach(button => {
@@ -1017,6 +1048,46 @@
     clearCart.addEventListener('click', () => {
         cart.splice(0, cart.length);
         renderOrder();
+    });
+
+    const btnSelectCash = document.getElementById('btnSelectCash');
+    const btnSelectVNPay = document.getElementById('btnSelectVNPay');
+    const paymentMethodInput = document.getElementById('paymentMethodInput');
+    const qrZone = document.getElementById('qrZone');
+    const qrImage = document.getElementById('qrImage');
+    const btnSubmitCheckout = document.getElementById('btnSubmitCheckout');
+
+    btnSelectCash.addEventListener('click', () => {
+        paymentMethodInput.value = 'CASH';
+        btnSelectCash.style.border = '2px solid #8B6F47';
+        btnSelectCash.style.background = '#fffaf5';
+        btnSelectCash.style.color = '#8B6F47';
+        
+        btnSelectVNPay.style.border = '1px solid #e0d5cc';
+        btnSelectVNPay.style.background = 'white';
+        btnSelectVNPay.style.color = '#666';
+        
+        qrZone.style.display = 'none';
+        btnSubmitCheckout.innerText = 'Thanh toán (Tiền mặt)';
+        btnSubmitCheckout.style.background = '#8B6F47';
+    });
+
+    btnSelectVNPay.addEventListener('click', () => {
+        paymentMethodInput.value = 'VNPAY';
+        btnSelectVNPay.style.border = '2px solid #005A9E';
+        btnSelectVNPay.style.background = '#f0f8ff';
+        btnSelectVNPay.style.color = '#005A9E';
+        
+        btnSelectCash.style.border = '1px solid #e0d5cc';
+        btnSelectCash.style.background = 'white';
+        btnSelectCash.style.color = '#666';
+        
+        qrZone.style.display = 'block';
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        qrImage.src = `https://img.vietqr.io/image/970436-0351000626359-compact2.png?amount=${total}&addInfo=ThanhToanPOS`;
+        
+        btnSubmitCheckout.innerText = 'Xác nhận nhận tiền (VNPAY)';
+        btnSubmitCheckout.style.background = '#005A9E';
     });
 
     checkoutForm.addEventListener('submit', event => {
