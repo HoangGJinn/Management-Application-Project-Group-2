@@ -29,14 +29,34 @@
         <h3>Cart</h3>
         <div id="items"></div>
         <div style="margin-top:8px">Tax: <span id="tax">0</span></div>
-        <div class="pay" id="payBtn">Pay <span id="total">0</span></div>
+<div class="pay" id="payBtn" style="cursor:pointer;">Pay <span id="total">0</span></div>
         <form id="checkoutForm" th:action="@{/pos/checkout}" method="post">
             <input type="hidden" name="cartJson" id="cartJson" />
+            <input type="hidden" name="paymentMethod" id="paymentMethodInput" value="CASH" />
         </form>
+
+        <!-- Thêm giao diện chọn Thanh toán ẩn bên dưới -->
+        <div id="paymentSection" style="display:none; margin-top:15px; border-top: 1px solid #ddd; padding-top:10px;">
+            <h4>Phương thức thanh toán:</h4>
+            <div style="display: flex; gap: 10px;">
+                <button type="button" id="btnCash" style="background:green; color:white; padding:8px; border:none; width:50%; cursor:pointer;">Tiền mặt</button>
+                <button type="button" id="btnVNPay" style="background:blue; color:white; padding:8px; border:none; width:50%; cursor:pointer;">QR VNPAY</button>
+            </div>
+
+            <div id="qrZone" style="display:none; margin-top:10px; text-align:center;">
+                <img id="qrImage" src="" alt="QR Code" style="width:100%; max-width:200px; border: 1px solid #ccc; padding: 5px;" />
+                <br/>
+                <button type="button" id="btnConfirmQR" style="background:#ff9800; color:white; border:none; padding:10px; margin-top:10px; cursor:pointer; width:100%; font-weight:bold;">
+                    Đã nhận được tiền -> Hoàn tất
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 <script>
     const cart = [];
+    let currentTotal = 0; // Bổ sung biến giữ tổng tiền
+
     function render(){
         const el = document.getElementById('items'); el.innerHTML='';
         let total=0;
@@ -46,9 +66,11 @@
             el.appendChild(div);
             total += c.price*c.quantity;
         });
+        currentTotal = total; // Lưu lại
         document.getElementById('total').innerText = '₹ ' + total.toFixed(2);
         document.getElementById('cartJson').value = JSON.stringify(cart.map(c=>({productId:c.id,quantity:c.quantity,size:'M',iceLevel:'100%',sugarLevel:'100%',temperature:'ICE'})));
     }
+
     document.addEventListener('click', e=>{
         if(e.target.classList.contains('add')){
             const id = parseInt(e.target.getAttribute('data-id'));
@@ -59,8 +81,28 @@
             else cart.push({id, name, price, quantity:1});
             render();
         }
-        if(e.target.id==='payBtn'){
+
+        // --- CODE XỬ LÝ THANH TOÁN ---
+        if(e.target.id==='payBtn' || e.target.parentElement.id==='payBtn'){
             if(cart.length===0) return alert('Cart empty');
+            // Hiện phần chọn phương thức
+            document.getElementById('paymentSection').style.display = 'block';
+        }
+
+        if(e.target.id === 'btnCash') {
+            document.getElementById('paymentMethodInput').value = 'CASH';
+            document.getElementById('checkoutForm').submit();
+        }
+
+        if(e.target.id === 'btnVNPay') {
+            document.getElementById('paymentMethodInput').value = 'VNPAY';
+            document.getElementById('qrZone').style.display = 'block';
+            
+            const qrUrl = `https://img.vietqr.io/image/970436-0351000626359-compact2.png?amount=${currentTotal}&addInfo=ThanhToanPOS`;
+            document.getElementById('qrImage').src = qrUrl;
+        }
+
+        if(e.target.id === 'btnConfirmQR') {
             document.getElementById('checkoutForm').submit();
         }
     });

@@ -1,5 +1,6 @@
 package com.management.coffee.model;
 
+import com.management.coffee.model.enums.OrderStatus;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,7 +32,15 @@ public class CafeOrder {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status", columnDefinition = "ENUM('Preparing', 'Ready', 'Served', 'Cancelled') DEFAULT 'Preparing'")
+    private OrderStatus orderStatus = OrderStatus.Preparing;
+
     public CafeOrder() { this.orderDate = LocalDateTime.now(); }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 
     public Integer getOrderId() { return orderId; }
     public void setOrderId(Integer orderId) { this.orderId = orderId; }

@@ -28,6 +28,10 @@ public class Payment {
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
 
+    public Payment() {
+        this.paymentDate = LocalDateTime.now();
+    }
+
     public Integer getPaymentId() { return paymentId; }
     public void setPaymentId(Integer paymentId) { this.paymentId = paymentId; }
     public CafeOrder getOrder() { return order; }
