@@ -535,7 +535,7 @@
                             <span th:text="${order.paymentStatus}">-</span>
                         </td>
                         <td th:text="${order.itemCount}">0</td>
-                        <td class="amount-text" th:text="${order.totalAmount} + 'đ'">0đ</td>
+                        <td class="amount-text" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'POINT', 0, 'COMMA')} + 'đ'">0đ</td>
                         <td>
                             <span class="status-badge"
                                   th:classappend="${order.paymentStatus == 'COMPLETED' ? 'status-completed' : (order.paymentStatus == 'CANCELLED' ? 'status-cancelled' : 'status-pending')}"
@@ -560,7 +560,7 @@
             </div>
             <div class="summary-item">
                 <div class="summary-label">DOANH THU HÔM NAY</div>
-                <div class="summary-value revenue-text" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</div>
+                <div class="summary-value revenue-text" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'POINT', 0, 'COMMA')} + 'đ'">0đ</div>
             </div>
 <!--            <div class="action-bar">-->
 <!--                <button class="btn-secondary" onclick="exportReport()">📥 Xuất báo cáo</button>-->

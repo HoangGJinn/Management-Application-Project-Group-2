@@ -594,7 +594,7 @@
                     <div class="stat-label">Doanh thu ngày</div>
                     <div class="stat-icon">📹</div>
                 </div>
-                <div class="stat-value" th:text="${#numbers.formatInteger(todayRevenue, 0)} + 'đ'">5.200.000đ</div>
+                <div class="stat-value" th:text="${#numbers.formatDecimal(todayRevenue, 0, 'POINT', 0, 'COMMA')} + 'đ'">5.200.000đ</div>
                 <div class="stat-change positive">↗ +12.5% so với hôm qua</div>
             </div>
 
@@ -683,7 +683,7 @@
                         <td>
                             <span class="status-badge status-served">SERVED</span>
                         </td>
-                        <td class="amount" th:text="${order.totalAmount != null ? #numbers.formatInteger(order.totalAmount, 0) : '0'} + 'đ'">125.000đ</td>
+                        <td class="amount" th:text="${order.totalAmount != null ? #numbers.formatDecimal(order.totalAmount, 0, 'POINT', 0, 'COMMA') : '0'} + 'đ'">125.000đ</td>
                     </tr>
                 </tbody>
             </table>

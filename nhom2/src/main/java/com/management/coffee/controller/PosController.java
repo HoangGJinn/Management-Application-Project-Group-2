@@ -78,7 +78,12 @@ public class PosController {
             oi.setSugarLevel(ci.sugarLevel);
             oi.setTemperature(ci.temperature);
             order.getItems().add(oi);
-            total = total.add(p.getBasePrice().multiply(BigDecimal.valueOf(ci.quantity)));
+            BigDecimal itemPrice = p.getVndPrice();
+            if (p.getBasePrice() != null && itemPrice != null && p.getBasePrice().compareTo(itemPrice) != 0) {
+                p.setBasePrice(itemPrice);
+                productRepository.save(p);
+            }
+            total = total.add(itemPrice.multiply(BigDecimal.valueOf(ci.quantity)));
         }
         log.info("Checkout total calculated: staffId={}, totalAmount={}, cartItems={}", staffId, total, cart.size());
         order.setTotalAmount(total);

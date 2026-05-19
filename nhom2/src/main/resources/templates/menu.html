@@ -773,7 +773,7 @@
                         </div>
                         <div class="product-body">
                             <div class="product-name" th:text="${product.productName}">Product Name</div>
-                            <div class="product-price" th:text="${#numbers.formatInteger(product.basePrice, 0)} + 'đ'">45.000đ</div>
+                            <div class="product-price" th:text="${#numbers.formatDecimal(product.vndPrice, 0, 'POINT', 0, 'COMMA')} + 'đ'">45.000đ</div>
                             <div class="product-description" th:text="${product.description}">Description...</div>
                             <div class="product-category" th:if="${product.category}" th:text="'Danh mục: ' + ${product.category.categoryName}">
                                 Danh mục: Category
@@ -792,7 +792,7 @@
                         <div style="display: none;" class="product-data"
                              th:data-id="${product.productId}"
                              th:data-name="${product.productName}"
-                             th:data-price="${product.basePrice}"
+                             th:data-price="${product.vndPrice}"
                              th:data-category="${product.category?.categoryId}"
                              th:data-description="${product.description}"
                              th:data-image="${product.imageUrl}"
