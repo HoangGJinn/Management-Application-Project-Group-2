@@ -30,6 +30,22 @@
             overflow-y: auto;
         }
 
+        .main-content {
+            margin-left: 0;
+            width: 100%;
+            padding: 30px;
+        }
+
+        .main-content.admin-view {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .main-content.employee-view {
+            margin-left: 0;
+            width: 100%;
+        }
+
         .logo {
             display: flex;
             align-items: center;
@@ -107,12 +123,6 @@
             text-align: center;
         }
 
-        .main-content {
-            margin-left: 250px;
-            flex: 1;
-            padding: 30px;
-        }
-
         .header-section {
             display: flex;
             justify-content: space-between;
@@ -129,6 +139,26 @@
         .header-actions {
             display: flex;
             gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #8B6F47;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #6b5635;
         }
 
         .search-box {
@@ -309,6 +339,130 @@
             color: white;
         }
 
+        .detail-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(29, 18, 10, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .detail-modal {
+            width: min(920px, 100%);
+            max-height: calc(100vh - 40px);
+            overflow: auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.26);
+            padding: 24px;
+        }
+
+        .detail-modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .detail-kicker {
+            color: #8B6F47;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+        }
+
+        .detail-modal-header h2 {
+            font-size: 26px;
+            color: #2c1810;
+        }
+
+        .detail-close-btn {
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 10px;
+            background: #f5f3f0;
+            color: #2c1810;
+            font-size: 22px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .detail-close-btn:hover {
+            background: #e8dfd7;
+        }
+
+        .detail-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .detail-meta-card {
+            background: #faf9f6;
+            border: 1px solid #e0d9d0;
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .detail-meta-label {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .detail-meta-value {
+            color: #2c1810;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .detail-items-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c1810;
+            margin: 14px 0 10px;
+        }
+
+        .detail-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border: 1px solid #e0d9d0;
+            border-radius: 12px;
+        }
+
+        .detail-items-table th {
+            background: #f5f3f0;
+            color: #333;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .detail-items-table td,
+        .detail-items-table th {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0ebe0;
+        }
+
+        .detail-items-table tbody tr:hover {
+            background: #faf9f6;
+        }
+
+        .detail-empty {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+        }
+
         .pagination {
             text-align: center;
             padding: 20px;
@@ -419,8 +573,14 @@
                 width: 200px;
             }
 
-            .main-content {
+            .main-content.admin-view {
                 margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+
+            .main-content.employee-view {
+                margin-left: 0;
+                width: 100%;
                 padding: 20px;
             }
 
@@ -456,7 +616,7 @@
 <body>
 <div class="container-wrapper">
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" th:if="${session.role == 'ADMIN'}">
         <a href="/" class="logo">
             <div class="logo-icon">☕</div>
             <div class="logo-text">
@@ -479,10 +639,11 @@
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div class="main-content" th:classappend="${session.role == 'ADMIN'} ? ' admin-view' : ' employee-view'">
         <div class="header-section">
             <h1>Lịch sử Đơn hàng</h1>
             <div class="header-actions">
+                <a href="/pos" class="back-btn" th:if="${session.role != 'ADMIN'}">← Quay lại POS</a>
                 <input type="text" class="search-box" placeholder="Tìm kiếm đơn hàng...">
                 <button class="icon-btn">🔔</button>
                 <button class="icon-btn">⚙️</button>
@@ -542,7 +703,7 @@
                                   th:text="${order.paymentStatus == 'COMPLETED' ? 'Đã hoàn thành' : (order.paymentStatus == 'CANCELLED' ? 'Đã hủy' : 'Chờ xử lý')}">-</span>
                         </td>
                         <td>
-                            <button class="action-btn" th:onclick="'viewOrderDetails(' + ${order.orderIdNum} + ')'">Xem chi tiết</button>
+                            <button type="button" class="action-btn" th:onclick="'viewOrderDetails(' + ${order.orderIdNum} + ')'">Xem chi tiết</button>
                         </td>
                     </tr>
                 </tbody>
@@ -570,10 +731,137 @@
     </div>
 </div>
 
+<div id="orderDetailModal" class="detail-modal-overlay">
+    <div class="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detailOrderId">
+        <div class="detail-modal-header">
+            <div>
+                <div class="detail-kicker">Chi tiết đơn hàng</div>
+                <h2 id="detailOrderId">#CF0000</h2>
+            </div>
+            <button type="button" class="detail-close-btn" id="detailCloseBtn">×</button>
+        </div>
+
+        <div class="detail-meta-grid">
+            <div class="detail-meta-card">
+                <span class="detail-meta-label">Thời gian</span>
+                <div class="detail-meta-value" id="detailOrderDate">-</div>
+            </div>
+            <div class="detail-meta-card">
+                <span class="detail-meta-label">Thanh toán</span>
+                <div class="detail-meta-value" id="detailPaymentStatus">-</div>
+            </div>
+            <div class="detail-meta-card">
+                <span class="detail-meta-label">Nhân viên</span>
+                <div class="detail-meta-value" id="detailStaffName">-</div>
+            </div>
+            <div class="detail-meta-card">
+                <span class="detail-meta-label">Khách hàng</span>
+                <div class="detail-meta-value" id="detailCustomerName">-</div>
+            </div>
+        </div>
+
+        <div class="detail-meta-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <div class="detail-meta-card">
+                <span class="detail-meta-label">Số món</span>
+                <div class="detail-meta-value" id="detailItemCount">0</div>
+            </div>
+            <div class="detail-meta-card">
+                <span class="detail-meta-label">Tổng tiền</span>
+                <div class="detail-meta-value" id="detailTotalAmount">0đ</div>
+            </div>
+        </div>
+
+        <div class="detail-items-title">Món trong đơn</div>
+        <table class="detail-items-table">
+            <thead>
+                <tr>
+                    <th>Món</th>
+                    <th>Số lượng</th>
+                    <th>Tùy chỉnh</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody id="detailItemsBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const orderHistoryData = /*[[${orders}]]*/ [];
+</script>
+
 <script>
+    const orderDetailModal = document.getElementById('orderDetailModal');
+    const detailCloseBtn = document.getElementById('detailCloseBtn');
+    const detailOrderId = document.getElementById('detailOrderId');
+    const detailOrderDate = document.getElementById('detailOrderDate');
+    const detailPaymentStatus = document.getElementById('detailPaymentStatus');
+    const detailStaffName = document.getElementById('detailStaffName');
+    const detailCustomerName = document.getElementById('detailCustomerName');
+    const detailItemCount = document.getElementById('detailItemCount');
+    const detailTotalAmount = document.getElementById('detailTotalAmount');
+    const detailItemsBody = document.getElementById('detailItemsBody');
+
+    function formatMoney(value) {
+        return new Intl.NumberFormat('vi-VN').format(Number(value) || 0) + 'đ';
+    }
+
+    function formatTime(value) {
+        if (!value) return '-';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '-';
+        return new Intl.DateTimeFormat('vi-VN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).format(date);
+    }
+
+    function paymentStatusLabel(status) {
+        if (status === 'COMPLETED') return 'Đã hoàn thành';
+        if (status === 'CANCELLED') return 'Đã hủy';
+        return 'Chờ xử lý';
+    }
+
+    function openDetailModal(order) {
+        if (!order || !orderDetailModal) return;
+
+        detailOrderId.textContent = order.orderId || '-';
+        detailOrderDate.textContent = formatTime(order.orderDate);
+        detailPaymentStatus.textContent = paymentStatusLabel(order.paymentStatus);
+        detailStaffName.textContent = order.staffName || '-';
+        detailCustomerName.textContent = order.customerName || 'Khách lẻ';
+        detailItemCount.textContent = order.itemCount ?? 0;
+        detailTotalAmount.textContent = formatMoney(order.totalAmount);
+
+        const items = Array.isArray(order.items) ? order.items : [];
+        detailItemsBody.innerHTML = items.length === 0
+            ? '<tr><td colspan="5" class="detail-empty">Không có món nào trong đơn này.</td></tr>'
+            : items.map(item => `
+                <tr>
+                    <td>${item.productName || '-'}</td>
+                    <td>${item.quantity ?? 0}</td>
+                    <td>${[item.size, item.iceLevel ? item.iceLevel + ' đá' : null, item.sugarLevel ? item.sugarLevel + ' đường' : null, item.temperature === 'HOT' ? 'Nóng' : 'Đá'].filter(Boolean).join(' | ')}</td>
+                    <td>${formatMoney(item.unitPrice)}</td>
+                    <td>${formatMoney(item.lineTotal)}</td>
+                </tr>
+            `).join('');
+
+        orderDetailModal.style.display = 'flex';
+    }
+
+    function closeDetailModal() {
+        if (orderDetailModal) {
+            orderDetailModal.style.display = 'none';
+        }
+    }
+
     function viewOrderDetails(orderId) {
-        alert('Xem chi tiết đơn hàng #CF' + String(orderId).padStart(4, '0'));
-        // TODO: Implement order detail modal/page
+        const order = orderHistoryData.find(item => Number(item.orderIdNum) === Number(orderId));
+        openDetailModal(order);
     }
 
     function exportReport() {
@@ -584,6 +872,19 @@
     function createNewOrder() {
         window.location.href = '/pos';
     }
+
+    detailCloseBtn.addEventListener('click', closeDetailModal);
+    orderDetailModal.addEventListener('click', event => {
+        if (event.target === orderDetailModal) {
+            closeDetailModal();
+        }
+    });
+
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            closeDetailModal();
+        }
+    });
 
     // Search functionality
     document.querySelector('.search-box').addEventListener('input', function(e) {

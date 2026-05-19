@@ -10,6 +10,7 @@ import com.management.coffee.repository.ProductRepository;
 import com.management.coffee.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -110,14 +111,15 @@ public class AdminController {
     }
 
     @GetMapping("/order-history")
+    @Transactional(readOnly = true)
     public String orderHistory(
             @RequestParam(defaultValue = "today") String period,
             @RequestParam(defaultValue = "all") String status,
             Model model,
             HttpSession session) {
-        
+
         Object role = session.getAttribute("role");
-        if (role == null || !"ADMIN".equals(role.toString())) return "redirect:/login";
+        if (role == null) return "redirect:/login";
 
         LocalDateTime startDate, endDate;
         LocalDate today = LocalDate.now();
@@ -178,6 +180,27 @@ public class AdminController {
                     detail.put("orderDate", order.getOrderDate());
                     detail.put("itemCount", order.getItems() != null ? order.getItems().size() : 0);
                     detail.put("totalAmount", order.getTotalAmount());
+                    detail.put("staffName", order.getStaff() != null ? order.getStaff().getFullName() : "-");
+                    detail.put("customerName", order.getCustomer() != null ? order.getCustomer().getFullName() : "Khách lẻ");
+
+                    List<Map<String, Object>> itemDetails = order.getItems() != null ? order.getItems().stream()
+                            .map(item -> {
+                                Map<String, Object> itemDetail = new HashMap<>();
+                                itemDetail.put("productName", item.getProduct() != null ? item.getProduct().getProductName() : "Món");
+                                itemDetail.put("quantity", item.getQuantity());
+                                itemDetail.put("size", item.getSize());
+                                itemDetail.put("iceLevel", item.getIceLevel());
+                                itemDetail.put("sugarLevel", item.getSugarLevel());
+                                itemDetail.put("temperature", item.getTemperature());
+                                itemDetail.put("unitPrice", item.getProduct() != null ? item.getProduct().getBasePrice() : null);
+                                BigDecimal lineTotal = item.getProduct() != null && item.getProduct().getBasePrice() != null
+                                        ? item.getProduct().getBasePrice().multiply(BigDecimal.valueOf(item.getQuantity() != null ? item.getQuantity() : 0))
+                                        : BigDecimal.ZERO;
+                                itemDetail.put("lineTotal", lineTotal);
+                                return itemDetail;
+                            })
+                            .toList() : List.of();
+                    detail.put("items", itemDetails);
                     
                     // Get payment status
                     List<Payment> payments = paymentRepository.findAll().stream()
