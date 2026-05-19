@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff POS - Cafe Menu</title>
+    <style>
+        :root {
+            --bg: #f7f4ef;
+            --surface: #ffffff;
+            --sidebar: #2b1d14;
+            --sidebar-soft: #493222;
+            --accent: #c7793f;
+            --accent-dark: #9f5b2d;
+            --text: #251915;
+            --muted: #7b6f68;
+            --border: #e8dfd7;
+            --danger: #b84f42;
+            --disabled: #b9b0aa;
+            --shadow: 0 16px 40px rgba(43, 29, 20, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .app-shell {
+            display: grid;
+            grid-template-columns: 240px minmax(0, 1fr);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--sidebar), var(--sidebar-soft));
+            color: #fff;
+            padding: 24px 18px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .brand {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 0;
+            margin-bottom: 28px;
+        }
+
+        .nav {
+            display: grid;
+            gap: 8px;
+        }
+
+        .nav a {
+            color: rgba(255, 255, 255, 0.82);
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            display: block;
+        }
+
+        .nav a.active,
+        .nav a:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+        }
+
+        .main {
+            padding: 28px;
+            min-width: 0;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            color: var(--muted);
+            font-size: 14px;
+            margin: 0 0 6px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .toolbar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 18px;
+        }
+
+        .category-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .category-btn {
+            border: 1px solid var(--border);
+            background: #fbfaf8;
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .category-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .search-row input {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 13px 14px;
+            font-size: 15px;
+            outline: none;
+            background: #fff;
+        }
+
+        .search-row input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(199, 121, 63, 0.14);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .menu-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 360px;
+        }
+
+        .menu-card.hidden {
+            display: none;
+        }
+
+        .menu-card.is-disabled {
+            opacity: 0.74;
+        }
+
+        .menu-image {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            background: #e8dfd7;
+        }
+
+        .menu-body {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            flex: 1;
+        }
+
+        .menu-meta {
+            color: var(--accent-dark);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .menu-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .menu-desc {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.4;
+            margin: 0;
+            min-height: 40px;
+        }
+
+        .menu-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .select-btn {
+            border: 0;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 8px;
+            padding: 10px 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .select-btn:hover {
+            background: var(--accent-dark);
+        }
+
+        .select-btn:disabled {
+            background: var(--disabled);
+            cursor: not-allowed;
+        }
+
+        .stock-label {
+            color: var(--danger);
+            font-size: 13px;
+            font-weight: 800;
+            margin-top: 2px;
+        }
+
+        .empty-state {
+            display: none;
+            background: var(--surface);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 28px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: flex-end;
+        }
+
+        .view-btn {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .view-btn:hover {
+            background: #f0e8e0;
+        }
+
+        .view-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 28px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--text);
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .customize-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .customize-label {
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .customize-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .option-btn {
+            border: 2px solid var(--border);
+            background: #fbfaf8;
+            color: var(--text);
+            border-radius: 6px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent);
+            background: rgba(199, 121, 63, 0.1);
+        }
+
+        .option-btn.selected {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .option-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            width: fit-content;
+        }
+
+        .quantity-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-btn:hover {
+            color: var(--accent-dark);
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            border: none;
+            font-size: 16px;
+            font-weight: 800;
+            outline: none;
+        }
+
+        .modal-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-footer button {
+            border: 0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .modal-cancel-btn {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .modal-cancel-btn:hover {
+            background: #ddd;
+        }
+
+        .modal-confirm-btn {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .modal-confirm-btn:hover {
+            background: var(--accent-dark);
+        }
+
+        @media (max-width: 1024px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main {
+                padding: 18px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">BrewBean</div>
+        <nav class="nav" aria-label="Staff navigation">
+            <a href="/pos_menu" class="active">Menu</a>
+            <a href="/pos_order">Order</a>
+            <a href="/pos">Dashboard</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Staff POS - Menu</p>
+                <h1>Café Shop Menu</h1>
+            </div>
+        </header>
+
+        <div class="top-actions">
+            <a href="/pos_order" class="view-btn">View Order</a>
+        </div>
+
+        <section aria-label="Menu catalog">
+            <div class="toolbar">
+                <div class="category-filter" aria-label="Category filter">
+                    <button type="button" class="category-btn active" data-category="All">All</button>
+                    <button type="button" class="category-btn" data-category="Coffee">Coffee</button>
+                    <button type="button" class="category-btn" data-category="Tea">Tea</button>
+                    <button type="button" class="category-btn" data-category="Juice">Juice</button>
+                    <button type="button" class="category-btn" data-category="Cake">Cake</button>
+                    <button type="button" class="category-btn" data-category="Food">Food</button>
+                    <button type="button" class="category-btn" data-category="Other">Other</button>
+                </div>
+                <div class="search-row">
+                    <input id="menuSearch" type="search" placeholder="Search menu item by name">
+                </div>
+            </div>
+
+            <div id="menuGrid" class="menu-grid">
+                <article th:each="p : ${products}"
+                         class="menu-card"
+                         th:classappend="${p.status.name() == 'OUT_OF_STOCK'} ? ' is-disabled' : ''"
+                         th:attr="data-name=${p.productName}, data-category=${p.category != null ? p.category.categoryName : 'Other'}, data-status=${p.status.name()}">
+                    <img class="menu-image"
+                         th:src="${p.imageUrl != null && !#strings.isEmpty(p.imageUrl) ? p.imageUrl : 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80'}"
+                         th:alt="${p.productName}">
+                    <div class="menu-body">
+                        <div class="menu-meta" th:text="${p.category != null ? p.category.categoryName : 'Other'}">Coffee</div>
+                        <h2 class="menu-title" th:text="${p.productName}">Black Coffee</h2>
+                        <p class="menu-desc" th:text="${p.description != null ? p.description : 'Freshly prepared cafe item.'}">Freshly prepared cafe item.</p>
+                        <div class="stock-label" th:if="${p.status.name() == 'OUT_OF_STOCK'}">Out of stock</div>
+                        <div class="menu-footer">
+                            <div class="price" th:text="${'$' + #numbers.formatDecimal(p.basePrice, 1, 2)}">$3.75</div>
+                            <button type="button"
+                                    class="select-btn"
+                                    th:disabled="${p.status.name() == 'OUT_OF_STOCK'}"
+                                    th:attr="data-id=${p.productId}, data-name=${p.productName}, data-price=${p.basePrice}">
+                                Add to Order
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div id="emptyState" class="empty-state">No menu items found.</div>
+        </section>
+    </main>
+</div>
+
+<!-- Product Customization Modal -->
+<div id="customizeModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Customize Order</h2>
+        </div>
+        <div class="modal-body">
+            <div class="customize-section">
+                <label class="customize-label">Size</label>
+                <div class="customize-options" id="sizeOptions">
+                    <button type="button" class="option-btn" data-value="S">Small</button>
+                    <button type="button" class="option-btn" data-value="M">Medium</button>
+                    <button type="button" class="option-btn" data-value="L">Large</button>
+                </div>
+            </div>
+
+            <div class="customize-section">
+                <label class="customize-label">Ice Level</label>
+                <div class="customize-options" id="iceOptions">
+                    <button type="button" class="option-btn" data-value="0%">No Ice</button>
+                    <button type="button" class="option-btn" data-value="50%">50%</button>
+                    <button type="button" class="option-btn" data-value="100%">Full</button>
+                </div>
+            </div>
+
+            <div class="customize-section">
+                <label class="customize-label">Sugar Level</label>
+                <div class="customize-options" id="sugarOptions">
+                    <button type="button" class="option-btn" data-value="0%">No Sugar</button>
+                    <button type="button" class="option-btn" data-value="50%">50%</button>
+                    <button type="button" class="option-btn" data-value="100%">100%</button>
+                </div>
+            </div>
+
+            <div class="customize-section">
+                <label class="customize-label">Temperature</label>
+                <div class="customize-options" id="temperatureOptions">
+                    <button type="button" class="option-btn" data-value="HOT">Hot</button>
+                    <button type="button" class="option-btn" data-value="ICE">Iced</button>
+                </div>
+            </div>
+
+            <div class="customize-section">
+                <label class="customize-label">Quantity</label>
+                <div class="quantity-control">
+                    <button type="button" class="quantity-btn" id="decreaseQty">−</button>
+                    <input type="number" id="quantityInput" class="quantity-input" value="1" min="1" max="99">
+                    <button type="button" class="quantity-btn" id="increaseQty">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="modal-cancel-btn" id="cancelCustomize">Cancel</button>
+            <button type="button" class="modal-confirm-btn" id="confirmCustomize">Add to Order</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const categoryButtons = document.querySelectorAll('.category-btn');
+    const searchInput = document.getElementById('menuSearch');
+    const menuCards = document.querySelectorAll('.menu-card');
+    const emptyState = document.getElementById('emptyState');
+
+    const customizeModal = document.getElementById('customizeModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const sizeOptions = document.getElementById('sizeOptions');
+    const iceOptions = document.getElementById('iceOptions');
+    const sugarOptions = document.getElementById('sugarOptions');
+    const temperatureOptions = document.getElementById('temperatureOptions');
+    const quantityInput = document.getElementById('quantityInput');
+    const decreaseQtyBtn = document.getElementById('decreaseQty');
+    const increaseQtyBtn = document.getElementById('increaseQty');
+    const cancelCustomizeBtn = document.getElementById('cancelCustomize');
+    const confirmCustomizeBtn = document.getElementById('confirmCustomize');
+
+    let selectedCategory = 'All';
+    let keyword = '';
+    let pendingItem = null;
+
+    // Get cart from sessionStorage
+    function getCart() {
+        const cartStr = sessionStorage.getItem('posCart');
+        return cartStr ? JSON.parse(cartStr) : [];
+    }
+
+    function saveCart(cart) {
+        sessionStorage.setItem('posCart', JSON.stringify(cart));
+    }
+
+    function applyFilters() {
+        let visibleCount = 0;
+        const normalizedKeyword = keyword.trim().toLowerCase();
+
+        menuCards.forEach(card => {
+            const itemCategory = card.dataset.category;
+            const itemName = card.dataset.name.toLowerCase();
+            const matchesCategory = selectedCategory === 'All' || itemCategory === selectedCategory;
+            const matchesKeyword = normalizedKeyword === '' || itemName.includes(normalizedKeyword);
+            const shouldShow = matchesCategory && matchesKeyword;
+
+            card.classList.toggle('hidden', !shouldShow);
+            if (shouldShow) {
+                visibleCount++;
+            }
+        });
+
+        emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    function openCustomizeModal(productId, productName, productPrice) {
+        pendingItem = {
+            id: productId,
+            name: productName,
+            price: productPrice,
+            size: 'M',
+            iceLevel: '100%',
+            sugarLevel: '100%',
+            temperature: 'ICE',
+            quantity: 1
+        };
+
+        modalTitle.textContent = `Customize: ${productName}`;
+        quantityInput.value = 1;
+
+        document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+        sizeOptions.querySelector('[data-value="M"]').classList.add('selected');
+        iceOptions.querySelector('[data-value="100%"]').classList.add('selected');
+        sugarOptions.querySelector('[data-value="100%"]').classList.add('selected');
+        temperatureOptions.querySelector('[data-value="ICE"]').classList.add('selected');
+
+        customizeModal.classList.add('active');
+    }
+
+    function closeCustomizeModal() {
+        customizeModal.classList.remove('active');
+        pendingItem = null;
+    }
+
+    sizeOptions.addEventListener('click', (e) => {
+        if (e.target.classList.contains('option-btn')) {
+            sizeOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            e.target.classList.add('selected');
+            if (pendingItem) pendingItem.size = e.target.dataset.value;
+        }
+    });
+
+    iceOptions.addEventListener('click', (e) => {
+        if (e.target.classList.contains('option-btn')) {
+            iceOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            e.target.classList.add('selected');
+            if (pendingItem) pendingItem.iceLevel = e.target.dataset.value;
+        }
+    });
+
+    sugarOptions.addEventListener('click', (e) => {
+        if (e.target.classList.contains('option-btn')) {
+            sugarOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            e.target.classList.add('selected');
+            if (pendingItem) pendingItem.sugarLevel = e.target.dataset.value;
+        }
+    });
+
+    temperatureOptions.addEventListener('click', (e) => {
+        if (e.target.classList.contains('option-btn')) {
+            temperatureOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            e.target.classList.add('selected');
+            if (pendingItem) pendingItem.temperature = e.target.dataset.value;
+        }
+    });
+
+    decreaseQtyBtn.addEventListener('click', () => {
+        const value = Math.max(1, parseInt(quantityInput.value) - 1);
+        quantityInput.value = value;
+        if (pendingItem) pendingItem.quantity = value;
+    });
+
+    increaseQtyBtn.addEventListener('click', () => {
+        const value = Math.min(99, parseInt(quantityInput.value) + 1);
+        quantityInput.value = value;
+        if (pendingItem) pendingItem.quantity = value;
+    });
+
+    quantityInput.addEventListener('change', () => {
+        let value = parseInt(quantityInput.value) || 1;
+        value = Math.max(1, Math.min(99, value));
+        quantityInput.value = value;
+        if (pendingItem) pendingItem.quantity = value;
+    });
+
+    cancelCustomizeBtn.addEventListener('click', closeCustomizeModal);
+
+    confirmCustomizeBtn.addEventListener('click', () => {
+        if (pendingItem) {
+            const cart = getCart();
+            const existingItem = cart.find(item =>
+                item.id === pendingItem.id &&
+                item.size === pendingItem.size &&
+                item.iceLevel === pendingItem.iceLevel &&
+                item.sugarLevel === pendingItem.sugarLevel &&
+                item.temperature === pendingItem.temperature
+            );
+
+            if (existingItem) {
+                existingItem.quantity += pendingItem.quantity;
+            } else {
+                cart.push(pendingItem);
+            }
+
+            saveCart(cart);
+            alert('Item added to order!');
+            closeCustomizeModal();
+        }
+    });
+
+    customizeModal.addEventListener('click', (e) => {
+        if (e.target === customizeModal) closeCustomizeModal();
+    });
+
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            selectedCategory = button.dataset.category;
+            categoryButtons.forEach(item => item.classList.remove('active'));
+            button.classList.add('active');
+            applyFilters();
+        });
+    });
+
+    searchInput.addEventListener('input', event => {
+        keyword = event.target.value;
+        applyFilters();
+    });
+
+    document.addEventListener('click', event => {
+        const button = event.target.closest('.select-btn');
+        if (!button || button.disabled) return;
+
+        const id = Number(button.dataset.id);
+        const name = button.dataset.name;
+        const price = Number(button.dataset.price);
+
+        openCustomizeModal(id, name, price);
+    });
+
+    applyFilters();
+</script>
+</body>
+</html>
+

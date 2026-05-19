@@ -9,4 +9,8 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<CafeOrder, Integer> {
 
     List<CafeOrder> findByOrderStatus(OrderStatus status);
+
+    List<CafeOrder> findByStaff_UserId(Integer staffId);
+
+    List<CafeOrder> findAllByOrderByOrderDateDesc();
 }

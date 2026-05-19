@@ -35,4 +35,11 @@ public class OrderController {
         List<CafeOrder> orders = orderService.getOrdersByStatus(status);
         return ResponseEntity.ok(orders);
     }
+
+    // 4. API Lấy tất cả đơn hàng
+    @GetMapping("/all")
+    public ResponseEntity<List<CafeOrder>> getAllOrders() {
+        List<CafeOrder> orders = orderService.getAllOrders();
+        return ResponseEntity.ok(orders);
+    }
 }
