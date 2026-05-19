@@ -335,174 +335,6 @@
             font-size: 15px;
         }
 
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: var(--surface);
-            border-radius: 8px;
-            padding: 28px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-header {
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 12px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            font-size: 24px;
-            color: var(--text);
-        }
-
-        .modal-body {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            margin-bottom: 24px;
-        }
-
-        .customize-section {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .customize-label {
-            font-weight: 800;
-            font-size: 14px;
-            color: var(--text);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .customize-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .option-btn {
-            border: 2px solid var(--border);
-            background: #fbfaf8;
-            color: var(--text);
-            border-radius: 6px;
-            padding: 10px 14px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-
-        .option-btn:hover {
-            border-color: var(--accent);
-            background: rgba(199, 121, 63, 0.1);
-        }
-
-        .option-btn.selected {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-        }
-
-        .option-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px 12px;
-            width: fit-content;
-        }
-
-        .quantity-btn {
-            background: none;
-            border: none;
-            color: var(--accent);
-            font-size: 18px;
-            font-weight: 800;
-            cursor: pointer;
-            padding: 0;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .quantity-btn:hover {
-            color: var(--accent-dark);
-        }
-
-        .quantity-input {
-            width: 50px;
-            text-align: center;
-            border: none;
-            font-size: 16px;
-            font-weight: 800;
-            outline: none;
-        }
-
-        .modal-footer {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .modal-footer button {
-            border: 0;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-weight: 800;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .modal-cancel-btn {
-            background: var(--border);
-            color: var(--text);
-        }
-
-        .modal-cancel-btn:hover {
-            background: #ddd;
-        }
-
-        .modal-confirm-btn {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .modal-confirm-btn:hover {
-            background: var(--accent-dark);
-        }
-
         @media (max-width: 1024px) {
             .app-shell {
                 grid-template-columns: 1fr;
@@ -604,86 +436,40 @@
                 <div id="emptyState" class="empty-state">No menu items found.</div>
             </section>
 
-            <aside class="order-panel" aria-label="Current order">
-                <h2>Current Order</h2>
-                <div id="orderItems" class="order-items">
-                    <div class="order-empty">No items selected.</div>
-                </div>
-                <div class="order-total">
-                    <span>Total</span>
-                    <span id="orderTotal">$0.00</span>
-                </div>
-                <form id="checkoutForm" th:action="@{/pos/checkout}" method="post">
-                    <input type="hidden" name="cartJson" id="cartJson">
-                    <button type="submit" class="pay-btn">Checkout</button>
-                </form>
-            </aside>
-        </div>
-    </main>
-</div>
-
-<!-- Product Customization Modal -->
-<div id="customizeModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modalTitle">Customize Order</h2>
-        </div>
-        <div class="modal-body">
-            <!-- Size Selection -->
-            <div class="customize-section">
-                <label class="customize-label">Size</label>
-                <div class="customize-options" id="sizeOptions">
-                    <button type="button" class="option-btn" data-value="S">Small</button>
-                    <button type="button" class="option-btn" data-value="M">Medium</button>
-                    <button type="button" class="option-btn" data-value="L">Large</button>
-                </div>
+        <aside class="order-panel" aria-label="Đơn hiện tại">
+            <div class="order-header">
+                <h2>Đơn hiện tại</h2>
+                <button type="button" id="clearCart" class="clear-btn">Xóa</button>
             </div>
-
-            <!-- Ice Level Selection -->
-            <div class="customize-section">
-                <label class="customize-label">Ice Level</label>
-                <div class="customize-options" id="iceOptions">
-                    <button type="button" class="option-btn" data-value="0%">No Ice</button>
-                    <button type="button" class="option-btn" data-value="50%">50%</button>
-                    <button type="button" class="option-btn" data-value="100%">Full</button>
-                </div>
+            <div id="orderItems" class="order-items">
+                <div class="order-empty">Chưa chọn món.</div>
             </div>
-
-            <!-- Sugar Level Selection -->
-            <div class="customize-section">
-                <label class="customize-label">Sugar Level</label>
-                <div class="customize-options" id="sugarOptions">
-                    <button type="button" class="option-btn" data-value="0%">No Sugar</button>
-                    <button type="button" class="option-btn" data-value="50%">50%</button>
-                    <button type="button" class="option-btn" data-value="100%">100%</button>
-                </div>
+            <div class="order-total">
+                <span>Tổng tiền</span>
+                <span id="orderTotal">0đ</span>
             </div>
+            <form id="checkoutForm" th:action="@{/pos/checkout}" method="post">
+                <input type="hidden" name="cartJson" id="cartJson">
+                <input type="hidden" name="paymentMethod" id="paymentMethodInput" value="CASH">
 
-            <!-- Temperature Selection -->
-            <div class="customize-section">
-                <label class="customize-label">Temperature</label>
-                <div class="customize-options" id="temperatureOptions">
-                    <button type="button" class="option-btn" data-value="HOT">Hot</button>
-                    <button type="button" class="option-btn" data-value="ICE">Iced</button>
+                <div style="margin-top: 16px; border-top: 1px dashed #e0d5cc; padding-top: 16px;">
+                    <div style="font-size: 13px; font-weight: 600; color: #6f6258; margin-bottom: 8px;">Phương thức thanh toán</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                        <button type="button" id="btnSelectCash" style="padding: 10px; border-radius: 8px; border: 2px solid #8B6F47; background: #fffaf5; color: #8B6F47; font-weight: 600; cursor: pointer; transition: all 0.2s;">Tiền mặt</button>
+                        <button type="button" id="btnSelectVNPay" style="padding: 10px; border-radius: 8px; border: 1px solid #e0d5cc; background: white; color: #666; font-weight: 600; cursor: pointer; transition: all 0.2s;">VNPAY QR</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Quantity Selection -->
-            <div class="customize-section">
-                <label class="customize-label">Quantity</label>
-                <div class="quantity-control">
-                    <button type="button" class="quantity-btn" id="decreaseQty">−</button>
-                    <input type="number" id="quantityInput" class="quantity-input" value="1" min="1" max="99">
-                    <button type="button" class="quantity-btn" id="increaseQty">+</button>
+                <div id="qrZone" style="display: none; text-align: center; margin-bottom: 16px; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e0d5cc;">
+                    <img id="qrImage" src="" style="width: 100%; max-width: 180px; margin: 0 auto; display: block;" />
+                    <p style="font-size: 12px; color: #666; margin-top: 8px;">Nhân viên kiểm tra tiền trước khi xác nhận</p>
                 </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="modal-cancel-btn" id="cancelCustomize">Cancel</button>
-            <button type="button" class="modal-confirm-btn" id="confirmCustomize">Add to Order</button>
-        </div>
+
+                <button type="submit" id="btnSubmitCheckout" class="pay-btn">Thanh toán (Tiền mặt)</button>
+            </form>
+        </aside>
     </div>
-</div>
+</main>
 
 <script>
     const categoryButtons = document.querySelectorAll('.category-btn');
@@ -695,23 +481,52 @@
     const cartJson = document.getElementById('cartJson');
     const checkoutForm = document.getElementById('checkoutForm');
 
-    // Modal elements
-    const customizeModal = document.getElementById('customizeModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const sizeOptions = document.getElementById('sizeOptions');
-    const iceOptions = document.getElementById('iceOptions');
-    const sugarOptions = document.getElementById('sugarOptions');
-    const temperatureOptions = document.getElementById('temperatureOptions');
-    const quantityInput = document.getElementById('quantityInput');
-    const decreaseQtyBtn = document.getElementById('decreaseQty');
-    const increaseQtyBtn = document.getElementById('increaseQty');
-    const cancelCustomizeBtn = document.getElementById('cancelCustomize');
-    const confirmCustomizeBtn = document.getElementById('confirmCustomize');
-
     let selectedCategory = 'All';
     let keyword = '';
     const cart = [];
-    let pendingItem = null; // Store item being customized
+    let nextCartLineId = 1;
+
+    function normalizeText(value) {
+        return (value || '')
+            .toString()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .trim();
+    }
+
+    function resolveProductImage(name, category, dbImage) {
+        const normalizedName = normalizeText(name);
+        const normalizedCategory = normalizeText(category);
+        const matchedRule = productImageRules.find(rule =>
+            rule.keys.some(key => normalizedName.includes(normalizeText(key)))
+        );
+
+        if (matchedRule) {
+            return matchedRule.url;
+        }
+
+        if (categoryImageFallbacks[normalizedCategory]) {
+            return categoryImageFallbacks[normalizedCategory];
+        }
+
+        return dbImage || categoryImageFallbacks.other;
+    }
+
+    function hydrateProductImages() {
+        document.querySelectorAll('.menu-image').forEach(image => {
+            const resolvedUrl = resolveProductImage(
+                image.dataset.productName,
+                image.dataset.category,
+                image.dataset.dbImage
+            );
+            image.src = resolvedUrl;
+            image.onerror = () => {
+                image.onerror = null;
+                image.src = categoryImageFallbacks.other;
+            };
+        });
+    }
 
     function formatMoney(value) {
         return '$' + value.toFixed(2);
@@ -746,19 +561,50 @@
             orderItems.innerHTML = '<div class="order-empty">No items selected.</div>';
         }
 
-        cart.forEach((item, index) => {
+        cart.forEach(item => {
             total += item.price * item.quantity;
             totalQuantity += item.quantity;
 
             const row = document.createElement('div');
             row.className = 'order-item';
-            row.style.position = 'relative';
             row.innerHTML = `
                 <div>
-                    <div class="order-item-name">${item.name}</div>
-                    <div class="order-item-meta">${item.quantity} x ${formatMoney(item.price)}</div>
-                    <div class="order-item-meta" style="font-size: 12px; color: #c7793f; margin-top: 4px;">
-                        ${item.size} | Ice: ${item.iceLevel} | Sugar: ${item.sugarLevel} | ${item.temperature}
+                    <div class="order-item-name">${escapeHtml(item.name)}</div>
+                    <div class="order-item-meta">Món ${index + 1} - ${formatMoney(item.price)} / món</div>
+                    <div class="custom-options" aria-label="Tùy chỉnh món">
+                        <label class="custom-field">
+                            <span>Size</span>
+                            <select class="custom-select" data-line-id="${item.lineId}" data-field="size">
+                                <option value="S"${selectedAttr(item.size, 'S')}>S</option>
+                                <option value="M"${selectedAttr(item.size, 'M')}>M</option>
+                                <option value="L"${selectedAttr(item.size, 'L')}>L</option>
+                            </select>
+                        </label>
+                        <label class="custom-field">
+                            <span>Đá</span>
+                            <select class="custom-select" data-line-id="${item.lineId}" data-field="iceLevel">
+                                <option value="0%"${selectedAttr(item.iceLevel, '0%')}>0%</option>
+                                <option value="30%"${selectedAttr(item.iceLevel, '30%')}>30%</option>
+                                <option value="50%"${selectedAttr(item.iceLevel, '50%')}>50%</option>
+                                <option value="70%"${selectedAttr(item.iceLevel, '70%')}>70%</option>
+                                <option value="100%"${selectedAttr(item.iceLevel, '100%')}>100%</option>
+                            </select>
+                        </label>
+                        <label class="custom-field">
+                            <span>Đường</span>
+                            <select class="custom-select" data-line-id="${item.lineId}" data-field="sugarLevel">
+                                <option value="0%"${selectedAttr(item.sugarLevel, '0%')}>0%</option>
+                                <option value="30%"${selectedAttr(item.sugarLevel, '30%')}>30%</option>
+                                <option value="50%"${selectedAttr(item.sugarLevel, '50%')}>50%</option>
+                                <option value="70%"${selectedAttr(item.sugarLevel, '70%')}>70%</option>
+                                <option value="100%"${selectedAttr(item.sugarLevel, '100%')}>100%</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="qty-controls">
+                        <button type="button" class="qty-btn" data-action="decrease" data-line-id="${item.lineId}">-</button>
+                        <span class="qty-value">${item.quantity}</span>
+                        <button type="button" class="qty-btn" data-action="increase" data-line-id="${item.lineId}">+</button>
                     </div>
                 </div>
                 <strong>${formatMoney(item.price * item.quantity)}</strong>
@@ -766,151 +612,14 @@
             orderItems.appendChild(row);
         });
 
-        orderTotal.innerText = `${formatMoney(total)} (${totalQuantity} item${totalQuantity === 1 ? '' : 's'})`;
-        cartJson.value = JSON.stringify(cart.map(item => ({
-            productId: item.id,
-            quantity: item.quantity,
-            size: item.size,
-            iceLevel: item.iceLevel,
-            sugarLevel: item.sugarLevel,
-            temperature: item.temperature
-        })));
+        orderTotal.innerText = formatMoney(total);
+        updateCartJson();
+        if (document.getElementById('paymentMethodInput') && document.getElementById('paymentMethodInput').value === 'VNPAY') {
+            const qrImage = document.getElementById('qrImage');
+            if(qrImage) qrImage.src = `https://img.vietqr.io/image/970436-0351000626359-compact2.png?amount=${total}&addInfo=ThanhToanPOS`;
+        }
     }
 
-    function openCustomizeModal(productId, productName, productPrice) {
-        pendingItem = {
-            id: productId,
-            name: productName,
-            price: productPrice,
-            size: 'M',
-            iceLevel: '100%',
-            sugarLevel: '100%',
-            temperature: 'ICE',
-            quantity: 1
-        };
-
-        modalTitle.textContent = `Customize: ${productName}`;
-        quantityInput.value = 1;
-
-        // Reset selections
-        document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-
-        // Set default selections
-        sizeOptions.querySelector('[data-value="M"]').classList.add('selected');
-        iceOptions.querySelector('[data-value="100%"]').classList.add('selected');
-        sugarOptions.querySelector('[data-value="100%"]').classList.add('selected');
-        temperatureOptions.querySelector('[data-value="ICE"]').classList.add('selected');
-
-        customizeModal.classList.add('active');
-    }
-
-    function closeCustomizeModal() {
-        customizeModal.classList.remove('active');
-        pendingItem = null;
-    }
-
-    // Size option buttons
-    sizeOptions.addEventListener('click', (e) => {
-        if (e.target.classList.contains('option-btn')) {
-            sizeOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-            e.target.classList.add('selected');
-            if (pendingItem) {
-                pendingItem.size = e.target.dataset.value;
-            }
-        }
-    });
-
-    // Ice level option buttons
-    iceOptions.addEventListener('click', (e) => {
-        if (e.target.classList.contains('option-btn')) {
-            iceOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-            e.target.classList.add('selected');
-            if (pendingItem) {
-                pendingItem.iceLevel = e.target.dataset.value;
-            }
-        }
-    });
-
-    // Sugar level option buttons
-    sugarOptions.addEventListener('click', (e) => {
-        if (e.target.classList.contains('option-btn')) {
-            sugarOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-            e.target.classList.add('selected');
-            if (pendingItem) {
-                pendingItem.sugarLevel = e.target.dataset.value;
-            }
-        }
-    });
-
-    // Temperature option buttons
-    temperatureOptions.addEventListener('click', (e) => {
-        if (e.target.classList.contains('option-btn')) {
-            temperatureOptions.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-            e.target.classList.add('selected');
-            if (pendingItem) {
-                pendingItem.temperature = e.target.dataset.value;
-            }
-        }
-    });
-
-    // Quantity controls
-    decreaseQtyBtn.addEventListener('click', () => {
-        const value = Math.max(1, parseInt(quantityInput.value) - 1);
-        quantityInput.value = value;
-        if (pendingItem) {
-            pendingItem.quantity = value;
-        }
-    });
-
-    increaseQtyBtn.addEventListener('click', () => {
-        const value = Math.min(99, parseInt(quantityInput.value) + 1);
-        quantityInput.value = value;
-        if (pendingItem) {
-            pendingItem.quantity = value;
-        }
-    });
-
-    quantityInput.addEventListener('change', () => {
-        let value = parseInt(quantityInput.value) || 1;
-        value = Math.max(1, Math.min(99, value));
-        quantityInput.value = value;
-        if (pendingItem) {
-            pendingItem.quantity = value;
-        }
-    });
-
-    // Modal buttons
-    cancelCustomizeBtn.addEventListener('click', closeCustomizeModal);
-
-    confirmCustomizeBtn.addEventListener('click', () => {
-        if (pendingItem) {
-            const existingItem = cart.find(item =>
-                item.id === pendingItem.id &&
-                item.size === pendingItem.size &&
-                item.iceLevel === pendingItem.iceLevel &&
-                item.sugarLevel === pendingItem.sugarLevel &&
-                item.temperature === pendingItem.temperature
-            );
-
-            if (existingItem) {
-                existingItem.quantity += pendingItem.quantity;
-            } else {
-                cart.push(pendingItem);
-            }
-
-            renderOrder();
-            closeCustomizeModal();
-        }
-    });
-
-    // Close modal when clicking outside
-    customizeModal.addEventListener('click', (e) => {
-        if (e.target === customizeModal) {
-            closeCustomizeModal();
-        }
-    });
-
-    // Category filters
     categoryButtons.forEach(button => {
         button.addEventListener('click', () => {
             selectedCategory = button.dataset.category;
@@ -920,27 +629,121 @@
         });
     });
 
-    // Search input
     searchInput.addEventListener('input', event => {
         keyword = event.target.value;
         applyFilters();
     });
 
-    // Add to order - now opens customization modal
     document.addEventListener('click', event => {
-        const button = event.target.closest('.select-btn');
-        if (!button || button.disabled) {
+        const addButton = event.target.closest('.select-btn');
+        if (addButton && !addButton.disabled) {
+            const id = Number(addButton.dataset.id);
+            const name = addButton.dataset.name;
+            const price = Number(addButton.dataset.price);
+            cart.push({
+                lineId: nextCartLineId++,
+                id,
+                name,
+                price,
+                quantity: 1,
+                size: 'M',
+                iceLevel: '100%',
+                sugarLevel: '100%',
+                temperature: 'ICE'
+            });
+
+            renderOrder();
             return;
         }
 
-        const id = Number(button.dataset.id);
-        const name = button.dataset.name;
-        const price = Number(button.dataset.price);
+        const qtyButton = event.target.closest('.qty-btn');
+        const removeButton = event.target.closest('.remove-line-btn');
+        if (!qtyButton && !removeButton) {
+            return;
+        }
 
-        openCustomizeModal(id, name, price);
+        const lineId = Number((qtyButton || removeButton).dataset.lineId);
+        const existingItem = cart.find(item => item.lineId === lineId);
+        if (!existingItem) {
+            return;
+        }
+
+        if (removeButton) {
+            cart.splice(cart.indexOf(existingItem), 1);
+        } else if (qtyButton.dataset.action === 'increase') {
+            existingItem.quantity += 1;
+        } else {
+            existingItem.quantity -= 1;
+            if (existingItem.quantity <= 0) {
+                cart.splice(cart.indexOf(existingItem), 1);
+            }
+        }
+
+        renderOrder();
     });
 
-    // Checkout form validation
+    orderItems.addEventListener('change', event => {
+        const select = event.target.closest('.custom-select');
+        if (!select) {
+            return;
+        }
+
+        const lineId = Number(select.dataset.lineId);
+        const field = select.dataset.field;
+        const existingItem = cart.find(item => item.lineId === lineId);
+        if (!existingItem || !['size', 'iceLevel', 'sugarLevel'].includes(field)) {
+            return;
+        }
+
+        existingItem[field] = select.value;
+        updateCartJson();
+    });
+
+    clearCart.addEventListener('click', () => {
+        cart.splice(0, cart.length);
+        renderOrder();
+    });
+
+    const btnSelectCash = document.getElementById('btnSelectCash');
+    const btnSelectVNPay = document.getElementById('btnSelectVNPay');
+    const paymentMethodInput = document.getElementById('paymentMethodInput');
+    const qrZone = document.getElementById('qrZone');
+    const qrImage = document.getElementById('qrImage');
+    const btnSubmitCheckout = document.getElementById('btnSubmitCheckout');
+
+    btnSelectCash.addEventListener('click', () => {
+        paymentMethodInput.value = 'CASH';
+        btnSelectCash.style.border = '2px solid #8B6F47';
+        btnSelectCash.style.background = '#fffaf5';
+        btnSelectCash.style.color = '#8B6F47';
+
+        btnSelectVNPay.style.border = '1px solid #e0d5cc';
+        btnSelectVNPay.style.background = 'white';
+        btnSelectVNPay.style.color = '#666';
+
+        qrZone.style.display = 'none';
+        btnSubmitCheckout.innerText = 'Thanh toán (Tiền mặt)';
+        btnSubmitCheckout.style.background = '#8B6F47';
+    });
+
+    btnSelectVNPay.addEventListener('click', () => {
+        paymentMethodInput.value = 'VNPAY';
+        btnSelectVNPay.style.border = '2px solid #005A9E';
+        btnSelectVNPay.style.background = '#f0f8ff';
+        btnSelectVNPay.style.color = '#005A9E';
+
+        btnSelectCash.style.border = '1px solid #e0d5cc';
+        btnSelectCash.style.background = 'white';
+        btnSelectCash.style.color = '#666';
+
+        qrZone.style.display = 'block';
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        qrImage.src = `https://img.vietqr.io/image/970436-0351000626359-compact2.png?amount=${total}&addInfo=ThanhToanPOS`;
+
+        btnSubmitCheckout.innerText = 'Xác nhận nhận tiền (VNPAY)';
+        btnSubmitCheckout.style.background = '#005A9E';
+    });
+
     checkoutForm.addEventListener('submit', event => {
         if (cart.length === 0) {
             event.preventDefault();

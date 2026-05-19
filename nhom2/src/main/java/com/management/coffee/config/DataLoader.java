@@ -17,6 +17,9 @@ import java.math.BigDecimal;
 @Component
 public class DataLoader implements CommandLineRunner {
 
+    private static final BigDecimal SMALL_PRICE_THRESHOLD = new BigDecimal("1000");
+    private static final BigDecimal VND_THOUSAND = new BigDecimal("1000");
+
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
@@ -54,14 +57,16 @@ public class DataLoader implements CommandLineRunner {
         Category food = ensureCategory("Food", "Quick meals and savory snacks");
         Category other = ensureCategory("Other", "Other cafe menu items");
 
-        ensureProduct(coffee, "Black Coffee", "Bold brewed coffee with a clean finish.", "3.75", "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
-        ensureProduct(coffee, "Espresso", "Pure, concentrated coffee served short.", "3.50", "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
-        ensureProduct(coffee, "Cappuccino", "Espresso with steamed milk and dense foam.", "4.75", "https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
-        ensureProduct(tea, "Green Tea", "Light green tea with a soft herbal aroma.", "2.50", "https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
-        ensureProduct(juice, "Orange Juice", "Fresh orange juice served chilled.", "3.00", "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
-        ensureProduct(cake, "Chocolate Cake", "Rich chocolate cake with cocoa cream.", "4.25", "https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?auto=format&fit=crop&w=900&q=80", ProductStatus.OUT_OF_STOCK);
-        ensureProduct(food, "Croissant Sandwich", "Buttery croissant with ham and cheese.", "5.20", "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
-        ensureProduct(other, "Mineral Water", "Bottled mineral water.", "1.50", "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
+        ensureProduct(coffee, "Black Coffee", "Bold brewed coffee with a clean finish.", "35000", "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
+        ensureProduct(coffee, "Espresso", "Pure, concentrated coffee served short.", "30000", "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
+        ensureProduct(coffee, "Cappuccino", "Espresso with steamed milk and dense foam.", "45000", "https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
+        ensureProduct(tea, "Green Tea", "Light green tea with a soft herbal aroma.", "30000", "https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
+        ensureProduct(juice, "Orange Juice", "Fresh orange juice served chilled.", "40000", "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
+        ensureProduct(cake, "Chocolate Cake", "Rich chocolate cake with cocoa cream.", "50000", "https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?auto=format&fit=crop&w=900&q=80", ProductStatus.OUT_OF_STOCK);
+        ensureProduct(food, "Croissant Sandwich", "Buttery croissant with ham and cheese.", "55000", "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
+        ensureProduct(other, "Mineral Water", "Bottled mineral water.", "15000", "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=900&q=80", ProductStatus.ACTIVE);
+
+        normalizeExistingProductPrices();
     }
 
     private Category ensureCategory(String name, String description) {
@@ -70,9 +75,34 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void ensureProduct(Category category, String name, String description, String price, String imageUrl, ProductStatus status) {
-        if (productRepository.findByProductName(name).isEmpty()) {
-            productRepository.save(createProduct(category, name, description, price, imageUrl, status));
+        BigDecimal normalizedPrice = normalizeVndPrice(new BigDecimal(price));
+        Product product = productRepository.findByProductName(name)
+                .orElseGet(() -> createProduct(category, name, description, normalizedPrice, imageUrl, status));
+
+        if (product.getProductId() == null || product.getBasePrice() == null || product.getBasePrice().compareTo(normalizedPrice) != 0) {
+            product.setBasePrice(normalizedPrice);
+            productRepository.save(product);
         }
+    }
+
+    private void normalizeExistingProductPrices() {
+        productRepository.findAll().forEach(product -> {
+            BigDecimal normalizedPrice = normalizeVndPrice(product.getBasePrice());
+            if (product.getBasePrice() != null && product.getBasePrice().compareTo(normalizedPrice) != 0) {
+                product.setBasePrice(normalizedPrice);
+                productRepository.save(product);
+            }
+        });
+    }
+
+    private BigDecimal normalizeVndPrice(BigDecimal price) {
+        if (price == null) {
+            return BigDecimal.ZERO;
+        }
+        if (price.compareTo(BigDecimal.ZERO) > 0 && price.compareTo(SMALL_PRICE_THRESHOLD) < 0) {
+            return price.multiply(VND_THOUSAND);
+        }
+        return price;
     }
 
     private Category createCategory(String name, String description) {
@@ -82,12 +112,12 @@ public class DataLoader implements CommandLineRunner {
         return category;
     }
 
-    private Product createProduct(Category category, String name, String description, String price, String imageUrl, ProductStatus status) {
+    private Product createProduct(Category category, String name, String description, BigDecimal price, String imageUrl, ProductStatus status) {
         Product product = new Product();
         product.setCategory(category);
         product.setProductName(name);
         product.setDescription(description);
-        product.setBasePrice(new BigDecimal(price));
+        product.setBasePrice(price);
         product.setImageUrl(imageUrl);
         product.setStatus(status);
         return product;

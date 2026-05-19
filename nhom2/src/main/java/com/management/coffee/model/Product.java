@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 @Table(name = "products")
 public class Product {
 
+    private static final BigDecimal SMALL_PRICE_THRESHOLD = new BigDecimal("1000");
+    private static final BigDecimal VND_THOUSAND = new BigDecimal("1000");
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer productId;
@@ -42,6 +45,12 @@ public class Product {
     public void setDescription(String description) { this.description = description; }
     public BigDecimal getBasePrice() { return basePrice; }
     public void setBasePrice(BigDecimal basePrice) { this.basePrice = basePrice; }
+    public BigDecimal getVndPrice() {
+        if (basePrice != null && basePrice.compareTo(BigDecimal.ZERO) > 0 && basePrice.compareTo(SMALL_PRICE_THRESHOLD) < 0) {
+            return basePrice.multiply(VND_THOUSAND);
+        }
+        return basePrice;
+    }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     public ProductStatus getStatus() { return status; }
