@@ -290,13 +290,13 @@
     <div class="stats">
         <div class="card">
             <div class="card-title">Doanh thu ky nay</div>
-            <div class="card-value" th:text="${#numbers.formatInteger(periodRevenue, 0)} + 'd'">0d</div>
+            <div class="card-value" th:text="${#numbers.formatDecimal(periodRevenue, 0, 'POINT', 0, 'COMMA')} + 'đ'">0đ</div>
             <div th:class="${growthPercent >= 0 ? 'trend-up' : 'trend-down'}"
                  th:text="${growthPercent >= 0 ? '+' : ''} + ${growthPercent} + '%'">+0%</div>
         </div>
         <div class="card">
             <div class="card-title">Ky truoc</div>
-            <div class="card-value" th:text="${#numbers.formatInteger(previousRevenue, 0)} + 'd'">0d</div>
+            <div class="card-value" th:text="${#numbers.formatDecimal(previousRevenue, 0, 'POINT', 0, 'COMMA')} + 'đ'">0đ</div>
             <div class="subtitle">So sanh cung ky</div>
         </div>
         <div class="card">
@@ -306,7 +306,7 @@
         </div>
         <div class="card">
             <div class="card-title">Gia tri TB / don</div>
-            <div class="card-value" th:text="${#numbers.formatInteger(avgOrderValue, 0)} + 'd'">0d</div>
+            <div class="card-value" th:text="${#numbers.formatDecimal(avgOrderValue, 0, 'POINT', 0, 'COMMA')} + 'đ'">0đ</div>
             <div class="subtitle">Trung binh moi don</div>
         </div>
     </div>
@@ -318,7 +318,7 @@
                 <div class="bar-col" th:each="point : ${chartData}">
                     <div class="bar" th:attr="data-revenue=${point.revenue}"></div>
                     <div class="bar-label" th:text="${point.label}">00/00</div>
-                    <div class="bar-value" th:text="${#numbers.formatInteger(point.revenue, 0)} + 'd'">0d</div>
+                    <div class="bar-value" th:text="${#numbers.formatDecimal(point.revenue, 0, 'POINT', 0, 'COMMA')} + 'đ'">0đ</div>
                 </div>
             </div>
         </div>
@@ -349,7 +349,7 @@
             <tbody>
             <tr th:each="point : ${chartData}">
                 <td th:text="${point.label}">00/00</td>
-                <td th:text="${#numbers.formatInteger(point.revenue, 0)} + 'd'">0d</td>
+                <td th:text="${#numbers.formatDecimal(point.revenue, 0, 'POINT', 0, 'COMMA')} + 'đ'">0đ</td>
             </tr>
             <tr th:if="${chartData.size() == 0}">
                 <td colspan="2">Khong co du lieu</td>

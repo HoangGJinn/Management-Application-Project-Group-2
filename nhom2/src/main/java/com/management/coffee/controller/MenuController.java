@@ -16,6 +16,9 @@ import java.util.Optional;
 @Controller
 public class MenuController {
 
+    private static final BigDecimal SMALL_PRICE_THRESHOLD = new BigDecimal("1000");
+    private static final BigDecimal VND_THOUSAND = new BigDecimal("1000");
+
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
@@ -93,7 +96,7 @@ public class MenuController {
         Product product = new Product();
         product.setProductName(productName);
         product.setDescription(description);
-        product.setBasePrice(basePrice);
+        product.setBasePrice(normalizeVndPrice(basePrice));
         product.setImageUrl(imageUrl != null ? imageUrl : "");
         product.setCategory(category.get());
         product.setStatus(ProductStatus.valueOf(status));
@@ -138,7 +141,7 @@ public class MenuController {
         Product p = product.get();
         p.setProductName(productName);
         p.setDescription(description);
-        p.setBasePrice(basePrice);
+        p.setBasePrice(normalizeVndPrice(basePrice));
         if (imageUrl != null && !imageUrl.isEmpty()) {
             p.setImageUrl(imageUrl);
         }
@@ -156,6 +159,16 @@ public class MenuController {
 
         productRepository.deleteById(id);
         return "redirect:/menu";
+    }
+
+    private BigDecimal normalizeVndPrice(BigDecimal price) {
+        if (price == null) {
+            return BigDecimal.ZERO;
+        }
+        if (price.compareTo(BigDecimal.ZERO) > 0 && price.compareTo(SMALL_PRICE_THRESHOLD) < 0) {
+            return price.multiply(VND_THOUSAND);
+        }
+        return price;
     }
 }
 

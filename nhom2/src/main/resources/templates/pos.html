@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ban hang - Artisanal Cafe</title>
+    <title>Bán hàng - Artisanal Cafe</title>
     <style>
         * {
             margin: 0;
@@ -405,6 +405,7 @@
         .order-item {
             display: grid;
             grid-template-columns: minmax(0, 1fr) auto;
+            align-items: start;
             gap: 10px;
             padding-bottom: 10px;
             border-bottom: 1px solid #f0ebe5;
@@ -419,6 +420,60 @@
         .order-item-meta {
             color: #999;
             font-size: 13px;
+        }
+
+        .custom-options {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .custom-field {
+            display: grid;
+            gap: 4px;
+            color: #6f6258;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .custom-select {
+            width: 100%;
+            min-width: 0;
+            border: 1px solid #e0d5cc;
+            border-radius: 6px;
+            background: white;
+            color: #2a1810;
+            font-size: 13px;
+            padding: 7px 8px;
+            outline: none;
+        }
+
+        .custom-select:focus {
+            border-color: #8B6F47;
+            box-shadow: 0 0 0 2px rgba(139, 111, 71, 0.14);
+        }
+
+        .order-line-actions {
+            display: grid;
+            justify-items: end;
+            gap: 8px;
+        }
+
+        .remove-line-btn {
+            border: 1px solid #e0d5cc;
+            border-radius: 6px;
+            background: #fff7f3;
+            color: #9c3b2e;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 8px;
+        }
+
+        .remove-line-btn:hover {
+            background: #ffe9e0;
+            border-color: #e6b5a8;
         }
 
         .qty-controls {
@@ -524,6 +579,10 @@
                 align-items: stretch;
                 flex-direction: column;
             }
+
+            .custom-options {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -533,7 +592,7 @@
         <div class="logo-icon">2</div>
         <div>
             <div class="logo-text">Artisanal Cafe</div>
-            <div class="logo-subtext">Nhan vien ban hang</div>
+            <div class="logo-subtext">Nhân viên bán hàng</div>
         </div>
     </div>
 
@@ -541,7 +600,7 @@
         <li class="nav-item">
             <a href="/pos" class="nav-link active">
                 <span>POS</span>
-                <span>Ban hang</span>
+                <span>Bán hàng</span>
             </a>
         </li>
     </ul>
@@ -552,7 +611,7 @@
         <li class="nav-item">
             <a href="/logout" class="nav-link">
                 <span>OUT</span>
-                <span>Dang xuat</span>
+                <span>Đăng xuất</span>
             </a>
         </li>
     </ul>
@@ -561,23 +620,23 @@
 <main class="main">
     <div class="header">
         <div>
-            <h1 class="header-title">Ban hang tai quay</h1>
-            <div class="header-subtitle">Chon mon, lap hoa don va thanh toan nhanh cho khach.</div>
+            <h1 class="header-title">Bán hàng tại quầy</h1>
+            <div class="header-subtitle">Chọn món, lập hóa đơn và thanh toán nhanh cho khách.</div>
         </div>
         <div class="header-actions">
             <div class="search-box">
-                <span>Search</span>
-                <input id="menuSearch" type="search" placeholder="Tim kiem mon...">
+                <span>Tìm</span>
+                <input id="menuSearch" type="search" placeholder="Tìm kiếm món...">
             </div>
             <div class="avatar">S</div>
         </div>
     </div>
 
     <div class="workspace">
-        <section aria-label="Danh sach mon">
+        <section aria-label="Danh sách món">
             <div class="catalog-toolbar">
-                <div class="tabs" aria-label="Loc danh muc">
-                    <button type="button" class="tab active" data-category="All">Tat ca</button>
+                <div class="tabs" aria-label="Lọc danh mục">
+                    <button type="button" class="tab active" data-category="All">Tất cả</button>
                     <button th:each="category : ${categories}"
                             type="button"
                             class="tab"
@@ -600,47 +659,47 @@
                              th:alt="${p.productName}">
                         <span class="status-badge"
                               th:classappend="${p.status.name() == 'OUT_OF_STOCK' || p.status.name() == 'INACTIVE'} ? ' out-of-stock' : ''">
-                            <span th:if="${p.status.name() == 'ACTIVE'}">Con hang</span>
-                            <span th:if="${p.status.name() == 'OUT_OF_STOCK'}">Het hang</span>
-                            <span th:if="${p.status.name() == 'INACTIVE'}">Tam dung</span>
+                            <span th:if="${p.status.name() == 'ACTIVE'}">Còn hàng</span>
+                            <span th:if="${p.status.name() == 'OUT_OF_STOCK'}">Hết hàng</span>
+                            <span th:if="${p.status.name() == 'INACTIVE'}">Tạm dừng</span>
                         </span>
                     </div>
                     <div class="menu-body">
                         <div class="menu-meta" th:text="${p.category != null ? p.category.categoryName : 'Other'}">Coffee</div>
                         <h2 class="menu-title" th:text="${p.productName}">Black Coffee</h2>
-                        <p class="menu-desc" th:text="${p.description != null ? p.description : 'Mon duoc pha che tai quan.'}">
-                            Mon duoc pha che tai quan.
+                        <p class="menu-desc" th:text="${p.description != null ? p.description : 'Món được pha chế tại quán.'}">
+                            Món được pha chế tại quán.
                         </p>
                         <div class="menu-footer">
-                            <div class="price" th:text="${#numbers.formatInteger(p.basePrice, 0)} + 'd'">45000d</div>
+                            <div class="price" th:text="${#numbers.formatDecimal(p.vndPrice, 0, 'POINT', 0, 'COMMA')} + 'đ'">45.000đ</div>
                             <button type="button"
                                     class="select-btn"
                                     th:disabled="${p.status.name() == 'OUT_OF_STOCK' || p.status.name() == 'INACTIVE'}"
-                                    th:attr="data-id=${p.productId}, data-name=${p.productName}, data-price=${p.basePrice}">
-                                Them mon
+                                    th:attr="data-id=${p.productId}, data-name=${p.productName}, data-price=${p.vndPrice}">
+                                Thêm món
                             </button>
                         </div>
                     </div>
                 </article>
             </div>
-            <div id="emptyState" class="empty-state">Khong tim thay mon phu hop.</div>
+            <div id="emptyState" class="empty-state">Không tìm thấy món phù hợp.</div>
         </section>
 
-        <aside class="order-panel" aria-label="Don hien tai">
+        <aside class="order-panel" aria-label="Đơn hiện tại">
             <div class="order-header">
-                <h2>Don hien tai</h2>
-                <button type="button" id="clearCart" class="clear-btn">Xoa</button>
+                <h2>Đơn hiện tại</h2>
+                <button type="button" id="clearCart" class="clear-btn">Xóa</button>
             </div>
             <div id="orderItems" class="order-items">
-                <div class="order-empty">Chua chon mon.</div>
+                <div class="order-empty">Chưa chọn món.</div>
             </div>
             <div class="order-total">
-                <span>Tong tien</span>
-                <span id="orderTotal">0d</span>
+                <span>Tổng tiền</span>
+                <span id="orderTotal">0đ</span>
             </div>
             <form id="checkoutForm" th:action="@{/pos/checkout}" method="post">
                 <input type="hidden" name="cartJson" id="cartJson">
-                <button type="submit" class="pay-btn">Thanh toan</button>
+                <button type="submit" class="pay-btn">Thanh toán</button>
             </form>
         </aside>
     </div>
@@ -716,6 +775,7 @@
     let selectedCategory = 'All';
     let keyword = '';
     const cart = [];
+    let nextCartLineId = 1;
 
     function normalizeText(value) {
         return (value || '')
@@ -761,10 +821,22 @@
 
     function formatMoney(value) {
         return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
             maximumFractionDigits: 0
-        }).format(value);
+        }).format(Number(value || 0)) + 'đ';
+    }
+
+    function escapeHtml(value) {
+        return String(value || '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char]));
+    }
+
+    function selectedAttr(currentValue, optionValue) {
+        return currentValue === optionValue ? ' selected' : '';
     }
 
     function applyFilters() {
@@ -791,10 +863,10 @@
         cartJson.value = JSON.stringify(cart.map(item => ({
             productId: item.id,
             quantity: item.quantity,
-            size: 'M',
-            iceLevel: '100%',
-            sugarLevel: '100%',
-            temperature: 'ICE'
+            size: item.size,
+            iceLevel: item.iceLevel,
+            sugarLevel: item.sugarLevel,
+            temperature: item.temperature
         })));
     }
 
@@ -803,25 +875,58 @@
         let total = 0;
 
         if (cart.length === 0) {
-            orderItems.innerHTML = '<div class="order-empty">Chua chon mon.</div>';
+            orderItems.innerHTML = '<div class="order-empty">Chưa chọn món.</div>';
         }
 
-        cart.forEach(item => {
+        cart.forEach((item, index) => {
             total += item.price * item.quantity;
 
             const row = document.createElement('div');
             row.className = 'order-item';
             row.innerHTML = `
                 <div>
-                    <div class="order-item-name">${item.name}</div>
-                    <div class="order-item-meta">${formatMoney(item.price)} / mon</div>
+                    <div class="order-item-name">${escapeHtml(item.name)}</div>
+                    <div class="order-item-meta">Món ${index + 1} - ${formatMoney(item.price)} / món</div>
+                    <div class="custom-options" aria-label="Tùy chỉnh món">
+                        <label class="custom-field">
+                            <span>Size</span>
+                            <select class="custom-select" data-line-id="${item.lineId}" data-field="size">
+                                <option value="S"${selectedAttr(item.size, 'S')}>S</option>
+                                <option value="M"${selectedAttr(item.size, 'M')}>M</option>
+                                <option value="L"${selectedAttr(item.size, 'L')}>L</option>
+                            </select>
+                        </label>
+                        <label class="custom-field">
+                            <span>Đá</span>
+                            <select class="custom-select" data-line-id="${item.lineId}" data-field="iceLevel">
+                                <option value="0%"${selectedAttr(item.iceLevel, '0%')}>0%</option>
+                                <option value="30%"${selectedAttr(item.iceLevel, '30%')}>30%</option>
+                                <option value="50%"${selectedAttr(item.iceLevel, '50%')}>50%</option>
+                                <option value="70%"${selectedAttr(item.iceLevel, '70%')}>70%</option>
+                                <option value="100%"${selectedAttr(item.iceLevel, '100%')}>100%</option>
+                            </select>
+                        </label>
+                        <label class="custom-field">
+                            <span>Đường</span>
+                            <select class="custom-select" data-line-id="${item.lineId}" data-field="sugarLevel">
+                                <option value="0%"${selectedAttr(item.sugarLevel, '0%')}>0%</option>
+                                <option value="30%"${selectedAttr(item.sugarLevel, '30%')}>30%</option>
+                                <option value="50%"${selectedAttr(item.sugarLevel, '50%')}>50%</option>
+                                <option value="70%"${selectedAttr(item.sugarLevel, '70%')}>70%</option>
+                                <option value="100%"${selectedAttr(item.sugarLevel, '100%')}>100%</option>
+                            </select>
+                        </label>
+                    </div>
                     <div class="qty-controls">
-                        <button type="button" class="qty-btn" data-action="decrease" data-id="${item.id}">-</button>
+                        <button type="button" class="qty-btn" data-action="decrease" data-line-id="${item.lineId}">-</button>
                         <span class="qty-value">${item.quantity}</span>
-                        <button type="button" class="qty-btn" data-action="increase" data-id="${item.id}">+</button>
+                        <button type="button" class="qty-btn" data-action="increase" data-line-id="${item.lineId}">+</button>
                     </div>
                 </div>
-                <strong>${formatMoney(item.price * item.quantity)}</strong>
+                <div class="order-line-actions">
+                    <strong>${formatMoney(item.price * item.quantity)}</strong>
+                    <button type="button" class="remove-line-btn" data-line-id="${item.lineId}">Xóa món</button>
+                </div>
             `;
             orderItems.appendChild(row);
         });
@@ -850,30 +955,37 @@
             const id = Number(addButton.dataset.id);
             const name = addButton.dataset.name;
             const price = Number(addButton.dataset.price);
-            const existingItem = cart.find(item => item.id === id);
-
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({ id, name, price, quantity: 1 });
-            }
+            cart.push({
+                lineId: nextCartLineId++,
+                id,
+                name,
+                price,
+                quantity: 1,
+                size: 'M',
+                iceLevel: '100%',
+                sugarLevel: '100%',
+                temperature: 'ICE'
+            });
 
             renderOrder();
             return;
         }
 
         const qtyButton = event.target.closest('.qty-btn');
-        if (!qtyButton) {
+        const removeButton = event.target.closest('.remove-line-btn');
+        if (!qtyButton && !removeButton) {
             return;
         }
 
-        const id = Number(qtyButton.dataset.id);
-        const existingItem = cart.find(item => item.id === id);
+        const lineId = Number((qtyButton || removeButton).dataset.lineId);
+        const existingItem = cart.find(item => item.lineId === lineId);
         if (!existingItem) {
             return;
         }
 
-        if (qtyButton.dataset.action === 'increase') {
+        if (removeButton) {
+            cart.splice(cart.indexOf(existingItem), 1);
+        } else if (qtyButton.dataset.action === 'increase') {
             existingItem.quantity += 1;
         } else {
             existingItem.quantity -= 1;
@@ -885,6 +997,23 @@
         renderOrder();
     });
 
+    orderItems.addEventListener('change', event => {
+        const select = event.target.closest('.custom-select');
+        if (!select) {
+            return;
+        }
+
+        const lineId = Number(select.dataset.lineId);
+        const field = select.dataset.field;
+        const existingItem = cart.find(item => item.lineId === lineId);
+        if (!existingItem || !['size', 'iceLevel', 'sugarLevel'].includes(field)) {
+            return;
+        }
+
+        existingItem[field] = select.value;
+        updateCartJson();
+    });
+
     clearCart.addEventListener('click', () => {
         cart.splice(0, cart.length);
         renderOrder();
@@ -893,7 +1022,7 @@
     checkoutForm.addEventListener('submit', event => {
         if (cart.length === 0) {
             event.preventDefault();
-            alert('Vui long chon it nhat mot mon.');
+            alert('Vui lòng chọn ít nhất một món.');
         }
     });
 
