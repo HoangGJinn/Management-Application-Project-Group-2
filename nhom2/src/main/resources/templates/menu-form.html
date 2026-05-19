@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product != null && product.productId != null ? 'Sửa món' : 'Thêm món mới'} + ' - Artisanal Cafe'">Thêm món mới - Artisanal Cafe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f3f0;
+            display: flex;
+        }
+
+        /* ============ SIDEBAR ============ */
+        .sidebar {
+            width: 240px;
+            background: #3d2817;
+            color: white;
+            padding: 24px 16px;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #8B6F47;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-weight: 600;
+        }
+
+        .logo-subtext {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 16px 0;
+        }
+
+        /* ============ MAIN CONTENT ============ */
+        .main {
+            flex: 1;
+            margin-left: 240px;
+            padding: 24px;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2a1810;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* ============ FORM ============ */
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            max-width: 800px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2a1810;
+            margin-bottom: 8px;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #ff4d4f;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0d5cc;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: white;
+            color: #2a1810;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #8B6F47;
+            background: #fafaf9;
+            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        /* ============ IMAGE PREVIEW ============ */
+        .image-preview-group {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .image-preview {
+            width: 200px;
+            height: 200px;
+            border: 2px dashed #e0d5cc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f7f4;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview.empty {
+            color: #999;
+            font-size: 32px;
+        }
+
+        /* ============ BUTTONS ============ */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #f0ebe5;
+        }
+
+        .btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #8B6F47;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #9d7d52;
+        }
+
+        .btn-secondary {
+            background: #f0ebe5;
+            color: #2a1810;
+            border: 1px solid #e0d5cc;
+        }
+
+        .btn-secondary:hover {
+            background: #e0d5cc;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main {
+                margin-left: 200px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                width: 240px;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .image-preview-group {
+                grid-template-columns: 1fr;
+            }
+
+            .image-preview {
+                width: 100%;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">2</div>
+            <div>
+                <div class="logo-text">Artisanal Cafe</div>
+                <div class="logo-subtext">Quản trị viên</div>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a th:href="@{/admin}" class="nav-link">
+                    <span>📊</span>
+                    <span>Bảng điều khiển</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/menu}" class="nav-link">
+                    <span>🍽️</span>
+                    <span>Thực đơn</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/order-history}" class="nav-link">
+                    <span>📋</span>
+                    <span>Lịch sử đơn hàng</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/reports}" class="nav-link">
+                    <span>📈</span>
+                    <span>Báo cáo</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a th:href="@{/logout}" class="nav-link">
+                    <span>🚪</span>
+                    <span>Đăng xuất</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="main">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="header-title" th:text="${product != null && product.productId != null ? 'Chỉnh sửa món' : 'Thêm món mới'}">
+                Thêm món mới
+            </h1>
+            <p class="header-subtitle">
+                <span th:if="${product == null || product.productId == null}">Thêm một món mới vào thực đơn của bạn</span>
+                <span th:if="${product != null && product.productId != null}">Chỉnh sửa thông tin món</span>
+            </p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <form th:if="${product != null && product.productId != null}" th:action="@{/menu/edit/{id}(id=${product.productId})}" method="post">
+                <input type="hidden" name="productId" th:value="${product.productId}">
+                <!-- Form Fields -->
+                <div class="form-group">
+                    <label class="form-label required" for="editProductName">Tên món</label>
+                    <input id="editProductName" type="text" name="productName" class="form-input" required placeholder="Nhập tên món" th:value="${product.productName}">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label required" for="editBasePrice">Giá</label>
+                        <input id="editBasePrice" type="number" name="basePrice" class="form-input" required placeholder="0" th:value="${product.basePrice}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required" for="editCategoryId">Danh mục</label>
+                        <select id="editCategoryId" name="categoryId" class="form-select" required>
+                            <option value="">-- Chọn danh mục --</option>
+                            <option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}" th:selected="${product.category != null && product.category.categoryId == cat.categoryId}">
+                                Category
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="editDescription">Mô tả</label>
+                    <textarea id="editDescription" name="description" class="form-textarea" placeholder="Mô tả về món..." th:text="${product.description}"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="editImageUrl">URL ảnh</label>
+                    <input id="editImageUrl" type="url" name="imageUrl" class="form-input" placeholder="https://example.com/image.jpg" th:value="${product.imageUrl}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required" for="editStatus">Trạng thái</label>
+                    <select id="editStatus" name="status" class="form-select" required>
+                        <option value="ACTIVE" th:selected="${product.status.name() == 'ACTIVE' || product.productId == null}">Hoạt động</option>
+                        <option value="OUT_OF_STOCK" th:selected="${product.status.name() == 'OUT_OF_STOCK'}">Hết hàng</option>
+                        <option value="INACTIVE" th:selected="${product.status.name() == 'INACTIVE'}">Tạm dừng</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/menu}" class="btn btn-secondary">← Quay lại</a>
+                    <button type="submit" class="btn btn-primary">💾 Cập nhật món</button>
+                </div>
+            </form>
+
+            <form th:if="${product == null || product.productId == null}" th:action="@{/menu/add}" method="post">
+                <!-- Form Fields -->
+                <div class="form-group">
+                    <label class="form-label required" for="addProductName">Tên món</label>
+                    <input id="addProductName" type="text" name="productName" class="form-input" required placeholder="Nhập tên món">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label required" for="addBasePrice">Giá</label>
+                        <input id="addBasePrice" type="number" name="basePrice" class="form-input" required placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required" for="addCategoryId">Danh mục</label>
+                        <select id="addCategoryId" name="categoryId" class="form-select" required>
+                            <option value="">-- Chọn danh mục --</option>
+                            <option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}">
+                                Category
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="addDescription">Mô tả</label>
+                    <textarea id="addDescription" name="description" class="form-textarea" placeholder="Mô tả về món..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="addImageUrl">URL ảnh</label>
+                    <input id="addImageUrl" type="url" name="imageUrl" class="form-input" placeholder="https://example.com/image.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required" for="addStatus">Trạng thái</label>
+                    <select id="addStatus" name="status" class="form-select" required>
+                        <option value="ACTIVE" selected>Hoạt động</option>
+                        <option value="OUT_OF_STOCK">Hết hàng</option>
+                        <option value="INACTIVE">Tạm dừng</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/menu}" class="btn btn-secondary">← Quay lại</a>
+                    <button type="submit" class="btn btn-primary">➕ Thêm món</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
+

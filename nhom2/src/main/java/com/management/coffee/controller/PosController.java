@@ -6,7 +6,11 @@ import com.management.coffee.model.CafeOrder;
 import com.management.coffee.model.OrderItem;
 import com.management.coffee.model.Product;
 import com.management.coffee.model.User;
-import com.management.coffee.repository.*;
+import com.management.coffee.repository.CategoryRepository;
+import com.management.coffee.repository.OrderItemRepository;
+import com.management.coffee.repository.OrderRepository;
+import com.management.coffee.repository.ProductRepository;
+import com.management.coffee.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,11 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.management.coffee.model.Payment;
-import com.management.coffee.model.enums.OrderStatus;
-import com.management.coffee.model.enums.PaymentMethod;
-import com.management.coffee.model.enums.PaymentStatus;
-import java.time.LocalDateTime;import java.math.BigDecimal;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -31,18 +31,18 @@ public class PosController {
     private static final Logger log = LoggerFactory.getLogger(PosController.class);
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
-    private final PaymentRepository paymentRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public PosController(ProductRepository productRepository, UserRepository userRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository, PaymentRepository paymentRepository) {
+    public PosController(ProductRepository productRepository, CategoryRepository categoryRepository, UserRepository userRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
-        this.paymentRepository = paymentRepository;
     }
 
     @GetMapping("/pos")
@@ -50,12 +50,13 @@ public class PosController {
         Object role = session.getAttribute("role");
         if (role == null) return "redirect:/login";
         model.addAttribute("products", productRepository.findAll());
+        model.addAttribute("categories", categoryRepository.findAll());
         return "pos";
     }
 
     @PostMapping("/pos/checkout")
     @Transactional
-    public String checkout(@RequestParam String cartJson, @RequestParam(defaultValue = "CASH") PaymentMethod paymentMethod, HttpSession session) throws Exception {
+    public String checkout(@RequestParam String cartJson, HttpSession session) throws Exception {
         Object uid = session.getAttribute("userId");
         if (uid == null) return "redirect:/login";
         Integer staffId = (Integer) uid;
@@ -64,7 +65,6 @@ public class PosController {
         log.info("Checkout started: staffId={}, cartItems={}", staffId, cart.size());
         CafeOrder order = new CafeOrder();
         order.setStaff(staff);
-        order.setOrderStatus(OrderStatus.Preparing); 
         BigDecimal total = BigDecimal.ZERO;
         for (CartItem ci : cart) {
             Product p = productRepository.findById(ci.productId).orElse(null);
@@ -78,19 +78,16 @@ public class PosController {
             oi.setSugarLevel(ci.sugarLevel);
             oi.setTemperature(ci.temperature);
             order.getItems().add(oi);
-            total = total.add(p.getBasePrice().multiply(BigDecimal.valueOf(ci.quantity)));
+            BigDecimal itemPrice = p.getVndPrice();
+            if (p.getBasePrice() != null && itemPrice != null && p.getBasePrice().compareTo(itemPrice) != 0) {
+                p.setBasePrice(itemPrice);
+                productRepository.save(p);
+            }
+            total = total.add(itemPrice.multiply(BigDecimal.valueOf(ci.quantity)));
         }
         log.info("Checkout total calculated: staffId={}, totalAmount={}, cartItems={}", staffId, total, cart.size());
         order.setTotalAmount(total);
         order = orderRepository.save(order);
-
-        Payment payment = new Payment();
-        payment.setOrder(order);
-        payment.setPaymentMethod(paymentMethod); 
-        payment.setPaymentStatus(PaymentStatus.COMPLETED); 
-        payment.setPaymentDate(LocalDateTime.now());
-        paymentRepository.save(payment);
-
         log.info("Order saved successfully: orderId={}, staffId={}, totalAmount={}", order.getOrderId(), staffId, total);
         return "redirect:/pos";
     }

@@ -4,29 +4,43 @@
     <meta charset="UTF-8">
     <title>Login</title>
     <style>
-        body{font-family:Arial;margin:0;padding:0;display:flex;align-items:center;justify-content:center;height:100vh}
-        .card{width:360px;padding:24px;border:1px solid #ddd;border-radius:6px}
-        .error{color:#b00}
+        html,body{height:100%;margin:0}
+        body{
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(rgba(20,12,8,0.45), rgba(20,12,8,0.45)), url('/images/bg-login.jpg') no-repeat center/cover;
+            display:flex;align-items:center;justify-content:center;
+        }
+        .login-wrap{width:420px;max-width:92%;text-align:center;color:#fff}
+        .brand{font-size:48px;letter-spacing:4px;font-weight:700;margin-bottom:10px;color:#e6d1c1}
+        .tag{font-size:12px;color:#d9c7bb;margin-bottom:26px}
+        .card{background:rgba(10,7,5,0.45);backdrop-filter:blur(6px);padding:30px;border-radius:40px;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+        .field{margin-bottom:16px;text-align:left}
+        .field label{display:block;color:rgba(255,255,255,0.85);font-size:13px;margin-bottom:8px}
+        .field input{width:100%;padding:14px 18px;border-radius:28px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:#f5efe9;outline:none}
+        .field input::placeholder{color:rgba(255,255,255,0.6)}
+        .btn{display:block;width:100%;padding:14px;border-radius:28px;border:none;background:#f0b89b;color:#3b2a20;font-weight:700;font-size:16px;cursor:pointer;margin-top:12px}
+        .error{color:#ffb3a7;margin-top:10px}
+        @media (max-width:420px){.brand{font-size:36px}}
     </style>
 </head>
 <body>
-<div class="card">
-    <h2>Sign In</h2>
-    <form th:action="@{/login}" method="post">
-        <div>
-            <label>Username</label>
-            <input name="username" required />
-        </div>
-        <div style="margin-top:8px">
-            <label>Password</label>
-            <input type="password" name="password" required />
-        </div>
-        <div style="margin-top:12px">
-            <button type="submit">Login</button>
-        </div>
-    </form>
-    <div th:if="${error}" class="error" th:text="${error}"></div>
-    <p style="margin-top:8px;font-size:13px">Sample accounts: admin/admin123, staff/staff123</p>
+<div class="login-wrap">
+    <div class="brand">Coffee Home</div>
+    <div class="tag">Beverage and Happiness</div>
+    <div class="card">
+        <form th:action="@{/login}" method="post">
+            <div class="field">
+                <label for="username">Username</label>
+                <input id="username" name="username" placeholder="Username.." required />
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input id="password" type="password" name="password" placeholder="Password" required />
+            </div>
+            <button class="btn" type="submit">Login</button>
+        </form>
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+    </div>
 </div>
 </body>
 </html>
