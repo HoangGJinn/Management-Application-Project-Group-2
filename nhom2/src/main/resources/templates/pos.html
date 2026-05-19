@@ -3,756 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff POS - Cafe Menu</title>
-    <style>
-        :root {
-            --bg: #f7f4ef;
-            --surface: #ffffff;
-            --sidebar: #2b1d14;
-            --sidebar-soft: #493222;
-            --accent: #c7793f;
-            --accent-dark: #9f5b2d;
-            --text: #251915;
-            --muted: #7b6f68;
-            --border: #e8dfd7;
-            --danger: #b84f42;
-            --disabled: #b9b0aa;
-            --shadow: 0 16px 40px rgba(43, 29, 20, 0.08);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .app-shell {
-            display: grid;
-            grid-template-columns: 240px minmax(0, 1fr);
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            background: linear-gradient(180deg, var(--sidebar), var(--sidebar-soft));
-            color: #fff;
-            padding: 24px 18px;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-        }
-
-        .brand {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: 0;
-            margin-bottom: 28px;
-        }
-
-        .nav {
-            display: grid;
-            gap: 8px;
-        }
-
-        .nav a {
-            color: rgba(255, 255, 255, 0.82);
-            text-decoration: none;
-            padding: 12px 14px;
-            border-radius: 8px;
-            font-size: 15px;
-            display: block;
-        }
-
-        .nav a.active,
-        .nav a:hover {
-            background: rgba(255, 255, 255, 0.14);
-            color: #fff;
-        }
-
-        .main {
-            padding: 28px;
-            min-width: 0;
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .eyebrow {
-            color: var(--muted);
-            font-size: 14px;
-            margin: 0 0 6px;
-        }
-
-        h1 {
-            font-size: 32px;
-            margin: 0;
-            line-height: 1.1;
-        }
-
-        .staff-badge {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            padding: 10px 14px;
-            color: var(--muted);
-            white-space: nowrap;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 340px;
-            gap: 22px;
-            align-items: start;
-        }
-
-        .toolbar {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            box-shadow: var(--shadow);
-            margin-bottom: 18px;
-        }
-
-        .category-filter {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
-        .category-btn {
-            border: 1px solid var(--border);
-            background: #fbfaf8;
-            color: var(--text);
-            border-radius: 999px;
-            padding: 10px 15px;
-            cursor: pointer;
-            font-weight: 700;
-        }
-
-        .category-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-        }
-
-        .search-row input {
-            width: 100%;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 13px 14px;
-            font-size: 15px;
-            outline: none;
-            background: #fff;
-        }
-
-        .search-row input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(199, 121, 63, 0.14);
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 18px;
-        }
-
-        .menu-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 360px;
-        }
-
-        .menu-card.hidden {
-            display: none;
-        }
-
-        .menu-card.is-disabled {
-            opacity: 0.74;
-        }
-
-        .menu-image {
-            width: 100%;
-            aspect-ratio: 4 / 3;
-            object-fit: cover;
-            background: #e8dfd7;
-        }
-
-        .menu-body {
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 9px;
-            flex: 1;
-        }
-
-        .menu-meta {
-            color: var(--accent-dark);
-            font-size: 13px;
-            font-weight: 800;
-        }
-
-        .menu-title {
-            font-size: 18px;
-            font-weight: 800;
-            margin: 0;
-        }
-
-        .menu-desc {
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.4;
-            margin: 0;
-            min-height: 40px;
-        }
-
-        .menu-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-top: auto;
-        }
-
-        .price {
-            font-size: 18px;
-            font-weight: 800;
-        }
-
-        .select-btn,
-        .pay-btn {
-            border: 0;
-            background: var(--accent);
-            color: #fff;
-            border-radius: 8px;
-            padding: 10px 13px;
-            font-weight: 800;
-            cursor: pointer;
-        }
-
-        .select-btn:hover,
-        .pay-btn:hover {
-            background: var(--accent-dark);
-        }
-
-        .select-btn:disabled {
-            background: var(--disabled);
-            cursor: not-allowed;
-        }
-
-        .stock-label {
-            color: var(--danger);
-            font-size: 13px;
-            font-weight: 800;
-            margin-top: 2px;
-        }
-
-        .empty-state {
-            display: none;
-            background: var(--surface);
-            border: 1px dashed var(--border);
-            border-radius: 8px;
-            padding: 28px;
-            color: var(--muted);
-            text-align: center;
-        }
-
-        .order-panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            padding: 18px;
-            position: sticky;
-            top: 24px;
-        }
-
-        .order-panel h2 {
-            margin: 0 0 14px;
-            font-size: 22px;
-        }
-
-        .order-items {
-            display: grid;
-            gap: 10px;
-            min-height: 80px;
-        }
-
-        .order-empty {
-            color: var(--muted);
-            font-size: 14px;
-            padding: 16px 0;
-        }
-
-        .order-item {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
-            gap: 12px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .order-item-name {
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .order-item-meta {
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .order-total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 2px solid var(--border);
-            padding-top: 14px;
-            margin-top: 16px;
-            font-size: 18px;
-            font-weight: 800;
-        }
-
-        .pay-btn {
-            width: 100%;
-            margin-top: 14px;
-            padding: 13px;
-            font-size: 15px;
-        }
-
-        @media (max-width: 1024px) {
-            .app-shell {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                position: static;
-                height: auto;
-            }
-
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .order-panel {
-                position: static;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .main {
-                padding: 18px;
-            }
-
-            .topbar {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            h1 {
-                font-size: 26px;
-            }
-        }
-    </style>
+    <title>POS - Đặt món</title>
+    <link rel="stylesheet" th:href="@{/css/pos.css}">
 </head>
 <body>
 <div class="app-shell">
+    <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="brand">BrewBean</div>
-        <nav class="nav" aria-label="Staff navigation">
-            <a href="/pos">Dashboard</a>
-            <a href="/pos" class="active">Menu</a>
-            <a href="/pos">Orders</a>
-            <a href="/pos">Customers</a>
-            <a href="/logout">Logout</a>
+        <div class="brand"><div class="brand-icon">☕</div> BrewBean</div>
+        <nav class="nav">
+            <a href="/pos" class="active"><span class="nav-icon">🛒</span> Đặt món</a>
+            <a href="/order-history"><span class="nav-icon">📋</span> Lịch sử</a>
         </nav>
+        <div class="sidebar-footer">
+            <a href="/logout" class="nav" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:13px;padding:8px 0;display:block">⏏ Đăng xuất</a>
+        </div>
     </aside>
 
+    <!-- Menu Area -->
     <main class="main">
         <header class="topbar">
             <div>
-                <p class="eyebrow">Staff POS</p>
-                <h1>Café Shop Menu</h1>
+                <p class="eyebrow">Nhân viên POS</p>
+                <h1 class="page-title">Menu đặt món</h1>
             </div>
         </header>
 
-        <div class="content-grid">
-            <section aria-label="Menu catalog">
-                <div class="toolbar">
-                    <div class="category-filter" aria-label="Category filter">
-                        <button type="button" class="category-btn active" data-category="All">All</button>
-                        <button type="button" class="category-btn" data-category="Coffee">Coffee</button>
-                        <button type="button" class="category-btn" data-category="Tea">Tea</button>
-                        <button type="button" class="category-btn" data-category="Juice">Juice</button>
-                        <button type="button" class="category-btn" data-category="Cake">Cake</button>
-                        <button type="button" class="category-btn" data-category="Food">Food</button>
-                        <button type="button" class="category-btn" data-category="Other">Other</button>
-                    </div>
-                    <div class="search-row">
-                        <input id="menuSearch" type="search" placeholder="Search menu item by name">
+        <div class="toolbar">
+            <div class="cat-filter">
+                <button type="button" class="cat-btn active" data-category="All">Tất cả</button>
+                <button th:each="cat : ${categories}" type="button" class="cat-btn"
+                        th:attr="data-category=${cat.categoryName}" th:text="${cat.categoryName}">Cat</button>
+            </div>
+            <input id="menuSearch" class="search-input" type="search" placeholder="🔍 Tìm món theo tên...">
+        </div>
+
+        <div id="menuGrid" class="menu-grid">
+            <article th:each="p : ${products}" class="menu-card"
+                     th:classappend="${p.status.name() == 'OUT_OF_STOCK'} ? ' is-disabled' : ''"
+                     th:attr="data-name=${p.productName}, data-category=${p.category != null ? p.category.categoryName : 'Other'}, data-status=${p.status.name()}">
+                <img class="menu-img"
+                     th:src="${p.imageUrl != null && !#strings.isEmpty(p.imageUrl) ? p.imageUrl : 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80'}"
+                     th:alt="${p.productName}">
+                <div class="menu-body">
+                    <div class="menu-meta" th:text="${p.category != null ? p.category.categoryName : 'Other'}">Coffee</div>
+                    <div class="menu-name" th:text="${p.productName}">Product</div>
+                    <p class="menu-desc" th:text="${p.description != null ? p.description : ''}"></p>
+                    <div class="stock-label" th:if="${p.status.name() == 'OUT_OF_STOCK'}">Hết hàng</div>
+                    <div class="menu-footer">
+                        <div class="menu-price" th:text="${#numbers.formatDecimal(p.basePrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</div>
+                        <button type="button" class="add-btn"
+                                th:disabled="${p.status.name() == 'OUT_OF_STOCK'}"
+                                th:attr="data-id=${p.productId}, data-name=${p.productName}, data-price=${p.basePrice}">
+                            + Thêm
+                        </button>
                     </div>
                 </div>
+            </article>
+        </div>
+        <div id="emptyState" class="empty-state">Không tìm thấy món nào.</div>
+    </main>
 
-                <div id="menuGrid" class="menu-grid">
-                    <article th:each="p : ${products}"
-                             class="menu-card"
-                             th:classappend="${p.status.name() == 'OUT_OF_STOCK'} ? ' is-disabled' : ''"
-                             th:attr="data-name=${p.productName}, data-category=${p.category != null ? p.category.categoryName : 'Other'}, data-status=${p.status.name()}">
-                        <img class="menu-image"
-                             th:src="${p.imageUrl != null && !#strings.isEmpty(p.imageUrl) ? p.imageUrl : 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80'}"
-                             th:alt="${p.productName}">
-                        <div class="menu-body">
-                            <div class="menu-meta" th:text="${p.category != null ? p.category.categoryName : 'Other'}">Coffee</div>
-                            <h2 class="menu-title" th:text="${p.productName}">Black Coffee</h2>
-                            <p class="menu-desc" th:text="${p.description != null ? p.description : 'Freshly prepared cafe item.'}">Freshly prepared cafe item.</p>
-                            <div class="stock-label" th:if="${p.status.name() == 'OUT_OF_STOCK'}">Out of stock</div>
-                            <div class="menu-footer">
-                                <div class="price" th:text="${'$' + #numbers.formatDecimal(p.basePrice, 1, 2)}">$3.75</div>
-                                <button type="button"
-                                        class="select-btn"
-                                        th:disabled="${p.status.name() == 'OUT_OF_STOCK'}"
-                                        th:attr="data-id=${p.productId}, data-name=${p.productName}, data-price=${p.basePrice}">
-                                    Add to Order
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div id="emptyState" class="empty-state">No menu items found.</div>
-            </section>
+    <!-- Order Panel -->
+    <aside class="order-panel">
+        <div class="panel-header">
+            <h2 class="panel-title">🧾 Đơn hiện tại</h2>
+            <button type="button" class="clear-btn" id="clearCartBtn">Xóa hết</button>
+        </div>
 
-        <aside class="order-panel" aria-label="Đơn hiện tại">
-            <div class="order-header">
-                <h2>Đơn hiện tại</h2>
-                <button type="button" id="clearCart" class="clear-btn">Xóa</button>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">Chưa có món nào.<br>Chọn món từ menu bên trái.</div>
+        </div>
+
+        <div class="cart-summary">
+            <div class="summary-row"><span>Số món:</span><span id="cartCount">0</span></div>
+            <div class="summary-row"><span>Số lượng:</span><span id="cartQty">0</span></div>
+            <div class="summary-total"><span>Tổng cộng</span><span id="cartTotal">0đ</span></div>
+        </div>
+
+        <div class="payment-section">
+            <div class="payment-label">Phương thức thanh toán</div>
+            <div class="pay-methods">
+                <button type="button" class="pay-method-btn active" id="btnCash">💵 Tiền mặt</button>
+                <button type="button" class="pay-method-btn" id="btnVnpay">📱 VNPay QR</button>
             </div>
-            <div id="orderItems" class="order-items">
-                <div class="order-empty">Chưa chọn món.</div>
-            </div>
-            <div class="order-total">
-                <span>Tổng tiền</span>
-                <span id="orderTotal">0đ</span>
+            <div class="qr-zone" id="qrZone">
+                <img id="qrImage" src="" alt="QR Code">
+                <p>Quét QR để thanh toán. Nhân viên xác nhận sau khi nhận tiền.</p>
             </div>
             <form id="checkoutForm" th:action="@{/pos/checkout}" method="post">
                 <input type="hidden" name="cartJson" id="cartJson">
-                <input type="hidden" name="paymentMethod" id="paymentMethodInput" value="CASH">
-
-                <div style="margin-top: 16px; border-top: 1px dashed #e0d5cc; padding-top: 16px;">
-                    <div style="font-size: 13px; font-weight: 600; color: #6f6258; margin-bottom: 8px;">Phương thức thanh toán</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-                        <button type="button" id="btnSelectCash" style="padding: 10px; border-radius: 8px; border: 2px solid #8B6F47; background: #fffaf5; color: #8B6F47; font-weight: 600; cursor: pointer; transition: all 0.2s;">Tiền mặt</button>
-                        <button type="button" id="btnSelectVNPay" style="padding: 10px; border-radius: 8px; border: 1px solid #e0d5cc; background: white; color: #666; font-weight: 600; cursor: pointer; transition: all 0.2s;">VNPAY QR</button>
-                    </div>
-                </div>
-
-                <div id="qrZone" style="display: none; text-align: center; margin-bottom: 16px; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e0d5cc;">
-                    <img id="qrImage" src="" style="width: 100%; max-width: 180px; margin: 0 auto; display: block;" />
-                    <p style="font-size: 12px; color: #666; margin-top: 8px;">Nhân viên kiểm tra tiền trước khi xác nhận</p>
-                </div>
-
-                <button type="submit" id="btnSubmitCheckout" class="pay-btn">Thanh toán (Tiền mặt)</button>
+                <input type="hidden" name="paymentMethod" id="payMethodInput" value="CASH">
+                <button type="submit" class="checkout-btn" id="checkoutBtn" disabled>Thanh toán (Tiền mặt)</button>
             </form>
-        </aside>
+        </div>
+    </aside>
+</div>
+
+<!-- Customize Modal -->
+<div id="customizeModal" class="modal-overlay">
+    <div class="modal">
+        <h2>Tùy chỉnh: <span id="modalTitle">Món</span></h2>
+        <div class="opt-section">
+            <div class="opt-label">Size</div>
+            <div class="opt-group" id="sizeOpts">
+                <button type="button" class="opt-btn" data-v="S">S - Nhỏ</button>
+                <button type="button" class="opt-btn" data-v="M">M - Vừa</button>
+                <button type="button" class="opt-btn" data-v="L">L - Lớn</button>
+            </div>
+        </div>
+        <div class="opt-section">
+            <div class="opt-label">Mức đá</div>
+            <div class="opt-group" id="iceOpts">
+                <button type="button" class="opt-btn" data-v="0%">Không đá</button>
+                <button type="button" class="opt-btn" data-v="30%">30%</button>
+                <button type="button" class="opt-btn" data-v="50%">50%</button>
+                <button type="button" class="opt-btn" data-v="70%">70%</button>
+                <button type="button" class="opt-btn" data-v="100%">100%</button>
+            </div>
+        </div>
+        <div class="opt-section">
+            <div class="opt-label">Mức đường</div>
+            <div class="opt-group" id="sugarOpts">
+                <button type="button" class="opt-btn" data-v="0%">Không đường</button>
+                <button type="button" class="opt-btn" data-v="30%">30%</button>
+                <button type="button" class="opt-btn" data-v="50%">50%</button>
+                <button type="button" class="opt-btn" data-v="70%">70%</button>
+                <button type="button" class="opt-btn" data-v="100%">100%</button>
+            </div>
+        </div>
+        <div class="opt-section">
+            <div class="opt-label">Nóng / Đá</div>
+            <div class="opt-group" id="tempOpts">
+                <button type="button" class="opt-btn" data-v="ICE">🧊 Đá</button>
+                <button type="button" class="opt-btn" data-v="HOT">🔥 Nóng</button>
+            </div>
+        </div>
+        <div class="opt-section">
+            <div class="opt-label">Số lượng</div>
+            <div class="modal-qty">
+                <button type="button" id="modalDec">−</button>
+                <input type="number" id="modalQty" value="1" min="1" max="99">
+                <button type="button" id="modalInc">+</button>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="modalCancel">Hủy</button>
+            <button type="button" class="btn-confirm" id="modalConfirm">✓ Thêm vào đơn</button>
+        </div>
     </div>
-</main>
+</div>
 
-<script>
-    const categoryButtons = document.querySelectorAll('.category-btn');
-    const searchInput = document.getElementById('menuSearch');
-    const menuCards = document.querySelectorAll('.menu-card');
-    const emptyState = document.getElementById('emptyState');
-    const orderItems = document.getElementById('orderItems');
-    const orderTotal = document.getElementById('orderTotal');
-    const cartJson = document.getElementById('cartJson');
-    const checkoutForm = document.getElementById('checkoutForm');
+<!-- Toast -->
+<div id="toast" class="toast"></div>
 
-    let selectedCategory = 'All';
-    let keyword = '';
-    const cart = [];
-    let nextCartLineId = 1;
-
-    function normalizeText(value) {
-        return (value || '')
-            .toString()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .toLowerCase()
-            .trim();
-    }
-
-    function resolveProductImage(name, category, dbImage) {
-        const normalizedName = normalizeText(name);
-        const normalizedCategory = normalizeText(category);
-        const matchedRule = productImageRules.find(rule =>
-            rule.keys.some(key => normalizedName.includes(normalizeText(key)))
-        );
-
-        if (matchedRule) {
-            return matchedRule.url;
-        }
-
-        if (categoryImageFallbacks[normalizedCategory]) {
-            return categoryImageFallbacks[normalizedCategory];
-        }
-
-        return dbImage || categoryImageFallbacks.other;
-    }
-
-    function hydrateProductImages() {
-        document.querySelectorAll('.menu-image').forEach(image => {
-            const resolvedUrl = resolveProductImage(
-                image.dataset.productName,
-                image.dataset.category,
-                image.dataset.dbImage
-            );
-            image.src = resolvedUrl;
-            image.onerror = () => {
-                image.onerror = null;
-                image.src = categoryImageFallbacks.other;
-            };
-        });
-    }
-
-    function formatMoney(value) {
-        return '$' + value.toFixed(2);
-    }
-
-    function applyFilters() {
-        let visibleCount = 0;
-        const normalizedKeyword = keyword.trim().toLowerCase();
-
-        menuCards.forEach(card => {
-            const itemCategory = card.dataset.category;
-            const itemName = card.dataset.name.toLowerCase();
-            const matchesCategory = selectedCategory === 'All' || itemCategory === selectedCategory;
-            const matchesKeyword = normalizedKeyword === '' || itemName.includes(normalizedKeyword);
-            const shouldShow = matchesCategory && matchesKeyword;
-
-            card.classList.toggle('hidden', !shouldShow);
-            if (shouldShow) {
-                visibleCount++;
-            }
-        });
-
-        emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
-    }
-
-    function renderOrder() {
-        orderItems.innerHTML = '';
-        let total = 0;
-        let totalQuantity = 0;
-
-        if (cart.length === 0) {
-            orderItems.innerHTML = '<div class="order-empty">No items selected.</div>';
-        }
-
-        cart.forEach(item => {
-            total += item.price * item.quantity;
-            totalQuantity += item.quantity;
-
-            const row = document.createElement('div');
-            row.className = 'order-item';
-            row.innerHTML = `
-                <div>
-                    <div class="order-item-name">${escapeHtml(item.name)}</div>
-                    <div class="order-item-meta">Món ${index + 1} - ${formatMoney(item.price)} / món</div>
-                    <div class="custom-options" aria-label="Tùy chỉnh món">
-                        <label class="custom-field">
-                            <span>Size</span>
-                            <select class="custom-select" data-line-id="${item.lineId}" data-field="size">
-                                <option value="S"${selectedAttr(item.size, 'S')}>S</option>
-                                <option value="M"${selectedAttr(item.size, 'M')}>M</option>
-                                <option value="L"${selectedAttr(item.size, 'L')}>L</option>
-                            </select>
-                        </label>
-                        <label class="custom-field">
-                            <span>Đá</span>
-                            <select class="custom-select" data-line-id="${item.lineId}" data-field="iceLevel">
-                                <option value="0%"${selectedAttr(item.iceLevel, '0%')}>0%</option>
-                                <option value="30%"${selectedAttr(item.iceLevel, '30%')}>30%</option>
-                                <option value="50%"${selectedAttr(item.iceLevel, '50%')}>50%</option>
-                                <option value="70%"${selectedAttr(item.iceLevel, '70%')}>70%</option>
-                                <option value="100%"${selectedAttr(item.iceLevel, '100%')}>100%</option>
-                            </select>
-                        </label>
-                        <label class="custom-field">
-                            <span>Đường</span>
-                            <select class="custom-select" data-line-id="${item.lineId}" data-field="sugarLevel">
-                                <option value="0%"${selectedAttr(item.sugarLevel, '0%')}>0%</option>
-                                <option value="30%"${selectedAttr(item.sugarLevel, '30%')}>30%</option>
-                                <option value="50%"${selectedAttr(item.sugarLevel, '50%')}>50%</option>
-                                <option value="70%"${selectedAttr(item.sugarLevel, '70%')}>70%</option>
-                                <option value="100%"${selectedAttr(item.sugarLevel, '100%')}>100%</option>
-                            </select>
-                        </label>
-                    </div>
-                    <div class="qty-controls">
-                        <button type="button" class="qty-btn" data-action="decrease" data-line-id="${item.lineId}">-</button>
-                        <span class="qty-value">${item.quantity}</span>
-                        <button type="button" class="qty-btn" data-action="increase" data-line-id="${item.lineId}">+</button>
-                    </div>
-                </div>
-                <strong>${formatMoney(item.price * item.quantity)}</strong>
-            `;
-            orderItems.appendChild(row);
-        });
-
-        orderTotal.innerText = formatMoney(total);
-        updateCartJson();
-        if (document.getElementById('paymentMethodInput') && document.getElementById('paymentMethodInput').value === 'VNPAY') {
-            const qrImage = document.getElementById('qrImage');
-            if(qrImage) qrImage.src = `https://img.vietqr.io/image/970436-0351000626359-compact2.png?amount=${total}&addInfo=ThanhToanPOS`;
-        }
-    }
-
-    categoryButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            selectedCategory = button.dataset.category;
-            categoryButtons.forEach(item => item.classList.remove('active'));
-            button.classList.add('active');
-            applyFilters();
-        });
-    });
-
-    searchInput.addEventListener('input', event => {
-        keyword = event.target.value;
-        applyFilters();
-    });
-
-    document.addEventListener('click', event => {
-        const addButton = event.target.closest('.select-btn');
-        if (addButton && !addButton.disabled) {
-            const id = Number(addButton.dataset.id);
-            const name = addButton.dataset.name;
-            const price = Number(addButton.dataset.price);
-            cart.push({
-                lineId: nextCartLineId++,
-                id,
-                name,
-                price,
-                quantity: 1,
-                size: 'M',
-                iceLevel: '100%',
-                sugarLevel: '100%',
-                temperature: 'ICE'
-            });
-
-            renderOrder();
-            return;
-        }
-
-        const qtyButton = event.target.closest('.qty-btn');
-        const removeButton = event.target.closest('.remove-line-btn');
-        if (!qtyButton && !removeButton) {
-            return;
-        }
-
-        const lineId = Number((qtyButton || removeButton).dataset.lineId);
-        const existingItem = cart.find(item => item.lineId === lineId);
-        if (!existingItem) {
-            return;
-        }
-
-        if (removeButton) {
-            cart.splice(cart.indexOf(existingItem), 1);
-        } else if (qtyButton.dataset.action === 'increase') {
-            existingItem.quantity += 1;
-        } else {
-            existingItem.quantity -= 1;
-            if (existingItem.quantity <= 0) {
-                cart.splice(cart.indexOf(existingItem), 1);
-            }
-        }
-
-        renderOrder();
-    });
-
-    orderItems.addEventListener('change', event => {
-        const select = event.target.closest('.custom-select');
-        if (!select) {
-            return;
-        }
-
-        const lineId = Number(select.dataset.lineId);
-        const field = select.dataset.field;
-        const existingItem = cart.find(item => item.lineId === lineId);
-        if (!existingItem || !['size', 'iceLevel', 'sugarLevel'].includes(field)) {
-            return;
-        }
-
-        existingItem[field] = select.value;
-        updateCartJson();
-    });
-
-    clearCart.addEventListener('click', () => {
-        cart.splice(0, cart.length);
-        renderOrder();
-    });
-
-    const btnSelectCash = document.getElementById('btnSelectCash');
-    const btnSelectVNPay = document.getElementById('btnSelectVNPay');
-    const paymentMethodInput = document.getElementById('paymentMethodInput');
-    const qrZone = document.getElementById('qrZone');
-    const qrImage = document.getElementById('qrImage');
-    const btnSubmitCheckout = document.getElementById('btnSubmitCheckout');
-
-    btnSelectCash.addEventListener('click', () => {
-        paymentMethodInput.value = 'CASH';
-        btnSelectCash.style.border = '2px solid #8B6F47';
-        btnSelectCash.style.background = '#fffaf5';
-        btnSelectCash.style.color = '#8B6F47';
-
-        btnSelectVNPay.style.border = '1px solid #e0d5cc';
-        btnSelectVNPay.style.background = 'white';
-        btnSelectVNPay.style.color = '#666';
-
-        qrZone.style.display = 'none';
-        btnSubmitCheckout.innerText = 'Thanh toán (Tiền mặt)';
-        btnSubmitCheckout.style.background = '#8B6F47';
-    });
-
-    btnSelectVNPay.addEventListener('click', () => {
-        paymentMethodInput.value = 'VNPAY';
-        btnSelectVNPay.style.border = '2px solid #005A9E';
-        btnSelectVNPay.style.background = '#f0f8ff';
-        btnSelectVNPay.style.color = '#005A9E';
-
-        btnSelectCash.style.border = '1px solid #e0d5cc';
-        btnSelectCash.style.background = 'white';
-        btnSelectCash.style.color = '#666';
-
-        qrZone.style.display = 'block';
-        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        qrImage.src = `https://img.vietqr.io/image/970436-0351000626359-compact2.png?amount=${total}&addInfo=ThanhToanPOS`;
-
-        btnSubmitCheckout.innerText = 'Xác nhận nhận tiền (VNPAY)';
-        btnSubmitCheckout.style.background = '#005A9E';
-    });
-
-    checkoutForm.addEventListener('submit', event => {
-        if (cart.length === 0) {
-            event.preventDefault();
-            alert('Please select at least one menu item.');
-        }
-    });
-
-    applyFilters();
-    renderOrder();
-</script>
+<script th:src="@{/js/pos.js}"></script>
 </body>
 </html>

@@ -51,4 +51,8 @@ public class OrderService {
     public List<CafeOrder> getOrdersByStatus(OrderStatus status) {
         return orderRepository.findByOrderStatus(status);
     }
+
+    public List<CafeOrder> getAllOrders() {
+        return orderRepository.findAllByOrderByOrderDateDesc();
+    }
 }
